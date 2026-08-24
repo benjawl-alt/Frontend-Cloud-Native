@@ -16,18 +16,15 @@ export class Login {
   ) {}
 
   login() {
-    this.msalService.loginPopup({
+    // Cambiamos loginPopup por loginRedirect
+    this.msalService.loginRedirect({
       scopes: ['User.Read']
     }).subscribe({
-      next: (result) => {
-        console.log('Login exitoso:', result);
-
-        this.msalService.instance.setActiveAccount(result.account);
-
-        this.router.navigate(['/inicio']);
+      next: () => {
+        console.log('Redireccionando a Microsoft...');
       },
       error: (error) => {
-        console.error('Error de inicio de sesión:', error);
+        console.error('Error al iniciar el redireccionamiento:', error);
       }
     });
   }
