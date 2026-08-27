@@ -104,7 +104,7 @@ nav a.active {
   width: 38px;
   height: 38px;
 
-  background: #2563eb;
+  background: #215ddd;
   color: white;
 
   border-radius: 50%;
@@ -573,5 +573,469 @@ nav a.active {
   .products {
     grid-template-columns: 1fr;
   }
+  /* ========================================
+   CARRITO
+======================================== */
+
+.cart-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cart {
+  position: relative;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 22px;
+  padding: 8px;
+}
+
+.cart:hover {
+  transform: scale(1.05);
+}
+
+
+/* ========================================
+   CONTADOR
+======================================== */
+
+.cart > span {
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+  width: 18px;
+  height: 18px;
+
+  background: #e85d04;
+  color: white;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  font-weight: bold;
+}
+
+
+/* ========================================
+   MENÚ DE USUARIO
+======================================== */
+
+.user-menu {
+  position: absolute;
+
+  top: 48px;
+  right: 0;
+
+  width: 230px;
+
+  background: white;
+
+  border: 1px solid #e5e5e5;
+
+  border-radius: 14px;
+
+  padding: 12px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.15);
+
+  z-index: 9999;
+
+  animation: menuAppear 0.15s ease-out;
+}
+
+
+/* ========================================
+   ANIMACIÓN
+======================================== */
+
+@keyframes menuAppear {
+
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* ========================================
+   INFORMACIÓN DEL USUARIO
+======================================== */
+
+.user-menu-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 8px;
+}
+
+
+/* Avatar */
+
+.profile-small {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  background: #f4a261;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+
+  font-size: 16px;
+}
+
+
+/* Información */
+
+.user-info {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.user-info strong {
+  font-size: 14px;
+  color: #222;
+}
+
+.user-info small {
+  font-size: 12px;
+  color: #777;
+}
+
+
+/* =====================================================
+   PERFIL
+===================================================== */
+
+.profile-container {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+}
+
+
+/* =====================================================
+   BOTÓN DEL PERFIL
+===================================================== */
+
+.profile {
+  width: 40px;
+  height: 40px;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #f4a261;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: transform 0.2s ease;
+}
+
+
+.profile:hover {
+  transform: scale(1.05);
+}
+
+
+/* =====================================================
+   MENÚ DEL PERFIL
+===================================================== */
+
+.profile-menu {
+  position: absolute;
+
+  top: 50px;
+
+  right: 0;
+
+  width: 280px;
+
+  background: white;
+
+  border: 1px solid #e5e5e5;
+
+  border-radius: 14px;
+
+  padding: 12px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.15);
+
+  z-index: 9999;
+
+  animation: profileMenuAppear 0.15s ease-out;
+}
+
+
+/* =====================================================
+   ANIMACIÓN
+===================================================== */
+
+@keyframes profileMenuAppear {
+
+  from {
+
+    opacity: 0;
+
+    transform: translateY(-5px);
+
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+  }
+
+}
+
+
+/* =====================================================
+   CABECERA DEL MENÚ
+===================================================== */
+
+.profile-menu-header {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 8px;
+}
+
+
+/* =====================================================
+   AVATAR GRANDE
+===================================================== */
+
+.profile-large {
+
+  width: 45px;
+
+  height: 45px;
+
+  min-width: 45px;
+
+  border-radius: 50%;
+
+  background: #f4a261;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 18px;
+
+  font-weight: bold;
+}
+
+
+/* =====================================================
+   INFORMACIÓN DEL USUARIO
+===================================================== */
+
+.profile-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+}
+
+
+.profile-info strong {
+
+  color: #222;
+
+  font-size: 14px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+.profile-info small {
+
+  color: #777;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =====================================================
+   SEPARADOR
+===================================================== */
+
+.profile-menu hr {
+
+  border: none;
+
+  border-top: 1px solid #eeeeee;
+
+  margin: 8px 0;
+}
+
+
+/* =====================================================
+   CERRAR SESIÓN
+===================================================== */
+
+.logout-button {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 11px;
+
+  border: none;
+
+  background: transparent;
+
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+
+  color: #333;
+
+  text-align: left;
+
+  transition: background 0.2s ease;
+}
+
+
+.logout-button:hover {
+
+  background: #f5f5f5;
+
+}
+
+
+.logout-icon {
+
+  font-size: 17px;
+}
+
+
+/* =====================================================
+   CARRITO
+===================================================== */
+
+.cart {
+
+  position: relative;
+
+  border: none;
+
+  background: transparent;
+
+  cursor: pointer;
+
+  font-size: 22px;
+
+  padding: 8px;
+}
+
+
+.cart > span {
+
+  position: absolute;
+
+  top: 0;
+
+  right: 0;
+
+  width: 18px;
+
+  height: 18px;
+
+  background: #e85d04;
+
+  color: white;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 11px;
+
+  font-weight: bold;
+}
 
 }

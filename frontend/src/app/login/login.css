@@ -121,3 +121,90 @@ button:hover {
   color: #6b7280;
   font-size: 14px;
 }
+/* ==========================================
+   BOTÓN ADMINISTRADOR
+========================================== */
+
+.admin-button {
+
+  width: 100%;
+
+  height: 48px;
+
+  margin-bottom: 12px;
+
+  border: 1px solid #2563eb;
+
+  border-radius: 8px;
+
+  background: white;
+
+  color: #2563eb;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  transition: all 0.2s ease;
+
+}
+
+
+.admin-button:hover {
+
+  background: #eff6ff;
+
+}
+
+
+.admin-icon {
+
+  font-size: 16px;
+
+}
+
+
+/* ==========================================
+   BOTÓN INICIAR SESIÓN
+========================================== */
+
+.login-button {
+
+  width: 100%;
+
+  height: 48px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+}
+
+
+.login-button:hover {
+
+  background: #1d4ed8;
+
+}

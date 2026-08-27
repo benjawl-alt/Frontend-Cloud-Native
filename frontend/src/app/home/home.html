@@ -1,112 +1,387 @@
 <header class="navbar">
 
+  <!-- LOGO -->
   <div class="logo">
-    <div class="logo-icon">P360</div>
-    <span>Pedidos 360</span>
+
+    <div class="logo-icon">
+      P360
+    </div>
+
+    <span>
+      Pedidos 360
+    </span>
+
   </div>
 
+
+  <!-- NAVEGACIÓN -->
   <nav>
-    <a class="active">Inicio</a>
-    <a>Productos</a>
-    <a>Sucursales</a>
-    <a>Mis pedidos</a>
+
+    <a class="active">
+      Inicio
+    </a>
+
+    <a>
+      Productos
+    </a>
+
+    <a>
+      Sucursales
+    </a>
+
+    <a>
+      Mis pedidos
+    </a>
+
   </nav>
 
+
+  <!-- ACCIONES -->
   <div class="actions">
-    <button class="search">🔍</button>
-    <button class="cart">
-      🛒
-      <span>2</span>
+
+
+    <!-- =========================
+         BUSCADOR
+    ========================== -->
+
+    <button
+      class="search"
+      type="button"
+    >
+      🔍
     </button>
-    <div class="profile">B</div>
+
+
+
+    <!-- =========================
+         CARRITO
+    ========================== -->
+
+    <button
+      class="cart"
+      type="button"
+    >
+
+      🛒
+
+      <span>
+        2
+      </span>
+
+    </button>
+
+
+
+    <!-- =========================
+         PERFIL
+    ========================== -->
+
+    <div class="profile-container">
+
+
+      <!-- BOTÓN DEL PERFIL -->
+
+      <button
+        class="profile"
+        type="button"
+        (click)="toggleMenu()"
+      >
+
+        {{ userInitial }}
+
+      </button>
+
+
+
+      <!-- =========================
+           MENÚ DEL PERFIL
+      ========================== -->
+
+      <div
+        class="profile-menu"
+        *ngIf="menuOpen"
+      >
+
+
+        <!-- =========================
+             INFORMACIÓN DEL USUARIO
+        ========================== -->
+
+        <div class="profile-menu-header">
+
+
+          
+
+
+          <!-- DATOS DEL USUARIO -->
+
+          <div class="profile-info">
+
+            <strong>
+              {{ user?.name || 'Usuario' }}
+            </strong>
+
+            <small>
+              Cuenta Microsoft
+            </small>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- SEPARADOR -->
+
+        <hr>
+
+
+
+        <!-- =========================
+             DASHBOARD ADMINISTRADOR
+             
+             SOLO APARECE SI:
+             isAdmin === true
+        ========================== -->
+
+        <button
+          *ngIf="isAdmin"
+          class="menu-button dashboard-button"
+          type="button"
+          (click)="goToAdmin()"
+        >
+
+          <span class="menu-icon">
+            ⚙️
+          </span>
+
+          <span>
+            Dashboard
+          </span>
+
+        </button>
+
+
+
+        <!-- =========================
+             CERRAR SESIÓN
+        ========================== -->
+
+        <button
+          class="logout-button"
+          type="button"
+          (click)="logout()"
+        >
+
+          <span class="logout-icon">
+            🚪
+          </span>
+
+          <span>
+            Cerrar sesión
+          </span>
+
+        </button>
+
+
+      </div>
+
+    </div>
+
   </div>
 
 </header>
 
 
+
+<!-- =====================================================
+     CONTENIDO PRINCIPAL
+===================================================== -->
+
 <main>
 
-  <!-- BUSCADOR -->
+
+  <!-- =========================
+       BUSCADOR
+  ========================== -->
+
   <section class="search-section">
 
-    <h1>¿Qué quieres pedir hoy?</h1>
+    <h1>
+      ¿Qué quieres pedir hoy?
+    </h1>
 
     <p>
       Encuentra productos de panaderías, pastelerías y cafeterías.
     </p>
 
+
     <div class="search-box">
-      <span>🔍</span>
+
+      <span>
+        🔍
+      </span>
+
       <input
         type="text"
         placeholder="Busca pan, café, pasteles..."
       >
+
     </div>
 
   </section>
 
 
-  <!-- BANNER -->
+
+  <!-- =========================
+       BANNER
+  ========================== -->
+
   <section class="hero">
+
 
     <div class="hero-text">
 
-      <span class="tag">PEDIDOS ONLINE</span>
+      <span class="tag">
+        PEDIDOS ONLINE
+      </span>
+
 
       <h2>
+
         Todo lo que te gusta,
-        <span>en un solo lugar.</span>
+
+        <span>
+          en un solo lugar.
+        </span>
+
       </h2>
 
+
       <p>
+
         Compra productos de las mejores panaderías,
         pastelerías y cafeterías de tu zona.
+
       </p>
 
-      <button>Ver productos</button>
+
+      <button>
+        Ver productos
+      </button>
 
     </div>
 
+
+
     <div class="hero-image">
+
       🥐
       ☕
       🎂
+
     </div>
 
   </section>
 
 
-  <!-- CATEGORÍAS -->
+
+  <!-- =========================
+       CATEGORÍAS
+  ========================== -->
+
   <section class="section">
 
+
     <div class="section-header">
+
       <div>
-        <h2>Explora por categoría</h2>
-        <p>Encuentra lo que estás buscando</p>
+
+        <h2>
+          Explora por categoría
+        </h2>
+
+        <p>
+          Encuentra lo que estás buscando
+        </p>
+
       </div>
+
     </div>
+
+
 
     <div class="categories">
 
-      <div class="category">
-        <div class="category-icon">🥖</div>
-        <h3>Panadería</h3>
-        <p>Pan fresco y productos artesanales</p>
-        <button>Ver productos →</button>
-      </div>
+
+      <!-- PANADERÍA -->
 
       <div class="category">
-        <div class="category-icon">🎂</div>
-        <h3>Pastelería</h3>
-        <p>Pasteles, tortas y dulces</p>
-        <button>Ver productos →</button>
+
+        <div class="category-icon">
+          🥖
+        </div>
+
+        <h3>
+          Panadería
+        </h3>
+
+        <p>
+          Pan fresco y productos artesanales
+        </p>
+
+        <button>
+          Ver productos →
+        </button>
+
       </div>
 
+
+
+      <!-- PASTELERÍA -->
+
       <div class="category">
-        <div class="category-icon">☕</div>
-        <h3>Cafetería</h3>
-        <p>Café y acompañamientos</p>
-        <button>Ver productos →</button>
+
+        <div class="category-icon">
+          🎂
+        </div>
+
+        <h3>
+          Pastelería
+        </h3>
+
+        <p>
+          Pasteles, tortas y dulces
+        </p>
+
+        <button>
+          Ver productos →
+        </button>
+
+      </div>
+
+
+
+      <!-- CAFETERÍA -->
+
+      <div class="category">
+
+        <div class="category-icon">
+          ☕
+        </div>
+
+        <h3>
+          Cafetería
+        </h3>
+
+        <p>
+          Café y acompañamientos
+        </p>
+
+        <button>
+          Ver productos →
+        </button>
+
       </div>
 
     </div>
@@ -114,40 +389,73 @@
   </section>
 
 
-  <!-- PRODUCTOS -->
+
+  <!-- =========================
+       PRODUCTOS
+  ========================== -->
+
   <section class="section">
+
 
     <div class="section-header">
 
       <div>
-        <h2>Productos destacados</h2>
-        <p>Los favoritos de nuestros clientes</p>
+
+        <h2>
+          Productos destacados
+        </h2>
+
+        <p>
+          Los favoritos de nuestros clientes
+        </p>
+
       </div>
 
-      <a class="see-all">Ver todos →</a>
+
+      <a class="see-all">
+        Ver todos →
+      </a>
 
     </div>
+
 
 
     <div class="products">
 
+
+      <!-- CROISSANT -->
+
       <article class="product-card">
 
-        <div class="product-image">🥐</div>
+        <div class="product-image">
+          🥐
+        </div>
+
 
         <div class="product-info">
 
-          <span class="store">Panadería Central</span>
+          <span class="store">
+            Panadería Central
+          </span>
 
-          <h3>Croissant artesanal</h3>
+          <h3>
+            Croissant artesanal
+          </h3>
 
-          <p>Recién horneado</p>
+          <p>
+            Recién horneado
+          </p>
+
 
           <div class="product-bottom">
 
-            <strong>$2.500</strong>
+            <strong>
+              $2.500
+            </strong>
 
-            <button>Agregar +</button>
+            <button>
+              Agregar +
+            </button>
 
           </div>
 
@@ -156,23 +464,40 @@
       </article>
 
 
+
+      <!-- PAN AMASADO -->
+
       <article class="product-card">
 
-        <div class="product-image">🍞</div>
+        <div class="product-image">
+          🍞
+        </div>
+
 
         <div class="product-info">
 
-          <span class="store">Panadería Providencia</span>
+          <span class="store">
+            Panadería Providencia
+          </span>
 
-          <h3>Pan amasado</h3>
+          <h3>
+            Pan amasado
+          </h3>
 
-          <p>6 unidades</p>
+          <p>
+            6 unidades
+          </p>
+
 
           <div class="product-bottom">
 
-            <strong>$3.500</strong>
+            <strong>
+              $3.500
+            </strong>
 
-            <button>Agregar +</button>
+            <button>
+              Agregar +
+            </button>
 
           </div>
 
@@ -181,23 +506,40 @@
       </article>
 
 
+
+      <!-- CAFÉ -->
+
       <article class="product-card">
 
-        <div class="product-image">☕</div>
+        <div class="product-image">
+          ☕
+        </div>
+
 
         <div class="product-info">
 
-          <span class="store">Café 360</span>
+          <span class="store">
+            Café 360
+          </span>
 
-          <h3>Café Latte</h3>
+          <h3>
+            Café Latte
+          </h3>
 
-          <p>Café espresso y leche</p>
+          <p>
+            Café espresso y leche
+          </p>
+
 
           <div class="product-bottom">
 
-            <strong>$3.200</strong>
+            <strong>
+              $3.200
+            </strong>
 
-            <button>Agregar +</button>
+            <button>
+              Agregar +
+            </button>
 
           </div>
 
@@ -206,23 +548,40 @@
       </article>
 
 
+
+      <!-- TORTA -->
+
       <article class="product-card">
 
-        <div class="product-image">🍰</div>
+        <div class="product-image">
+          🍰
+        </div>
+
 
         <div class="product-info">
 
-          <span class="store">Dulce Momento</span>
+          <span class="store">
+            Dulce Momento
+          </span>
 
-          <h3>Porción de torta</h3>
+          <h3>
+            Porción de torta
+          </h3>
 
-          <p>Chocolate y crema</p>
+          <p>
+            Chocolate y crema
+          </p>
+
 
           <div class="product-bottom">
 
-            <strong>$4.500</strong>
+            <strong>
+              $4.500
+            </strong>
 
-            <button>Agregar +</button>
+            <button>
+              Agregar +
+            </button>
 
           </div>
 
@@ -235,55 +594,125 @@
   </section>
 
 
-  <!-- LOCALES -->
+
+  <!-- =========================
+       LOCALES
+  ========================== -->
+
   <section class="stores-section">
 
+
     <div>
-      <h2>Locales disponibles</h2>
+
+      <h2>
+        Locales disponibles
+      </h2>
 
       <p>
+
         Compra directamente en establecimientos asociados
         a Pedidos 360.
+
       </p>
+
     </div>
+
+
 
     <div class="store-list">
 
-      <div class="store-card">
-        <div class="store-logo">🥖</div>
 
-        <div>
-          <h3>Panadería Central</h3>
-          <p>⭐ 4.8 · Abierto ahora</p>
+      <!-- LOCAL 1 -->
+
+      <div class="store-card">
+
+        <div class="store-logo">
+          🥖
         </div>
 
-        <button>Ver local</button>
+
+        <div>
+
+          <h3>
+            Panadería Central
+          </h3>
+
+          <p>
+            ⭐ 4.8 · Abierto ahora
+          </p>
+
+        </div>
+
+
+        <button>
+          Ver local
+        </button>
+
       </div>
 
-      <div class="store-card">
-        <div class="store-logo">☕</div>
 
-        <div>
-          <h3>Café Providencia</h3>
-          <p>⭐ 4.7 · Abierto ahora</p>
+
+      <!-- LOCAL 2 -->
+
+      <div class="store-card">
+
+        <div class="store-logo">
+          ☕
         </div>
 
-        <button>Ver local</button>
+
+        <div>
+
+          <h3>
+            Café Providencia
+          </h3>
+
+          <p>
+            ⭐ 4.7 · Abierto ahora
+          </p>
+
+        </div>
+
+
+        <button>
+          Ver local
+        </button>
+
       </div>
 
-      <div class="store-card">
-        <div class="store-logo">🎂</div>
 
-        <div>
-          <h3>Dulce Momento</h3>
-          <p>⭐ 4.9 · Abierto ahora</p>
+
+      <!-- LOCAL 3 -->
+
+      <div class="store-card">
+
+        <div class="store-logo">
+          🎂
         </div>
 
-        <button>Ver local</button>
+
+        <div>
+
+          <h3>
+            Dulce Momento
+          </h3>
+
+          <p>
+            ⭐ 4.9 · Abierto ahora
+          </p>
+
+        </div>
+
+
+        <button>
+          Ver local
+        </button>
+
       </div>
 
     </div>
 
   </section>
+
 
 </main>
