@@ -20,8 +20,8 @@ const msalInstance = new PublicClientApplication({
   auth: {
     clientId: 'b3dd3447-de99-4c5a-9cae-cf347f9aa7c2',
     authority: 'https://login.microsoftonline.com/6cad67e2-2872-4d7c-9af2-de5251e67986',
-    redirectUri: 'http://54.85.169.218',
-    postLogoutRedirectUri: 'http://54.85.169.218'
+    redirectUri: window.location.origin,
+postLogoutRedirectUri: window.location.origin
   },
 
   cache: {
