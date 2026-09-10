@@ -69,7 +69,17 @@
       </span>
 
     </button>
-
+    <!-- ZONA DE PRUEBAS PARA BACKEND -->
+<div style="margin-top: 40px; padding: 20px; text-align: center; background-color: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc;">
+  <h3>Prueba de Seguridad (Azure AD a Spring Boot)</h3>
+  <p>Presiona F12 (pestaña Network/Red) y haz clic en el botón para verificar que viaja el Token JWT.</p>
+  
+  <button 
+    (click)="crearPedidoPrueba()" 
+    style="padding: 12px 24px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
+    Enviar Pedido Seguro a ms-order
+  </button>
+</div>
 
 
     <!-- =========================

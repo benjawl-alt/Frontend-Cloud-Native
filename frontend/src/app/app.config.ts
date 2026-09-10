@@ -37,11 +37,11 @@ const msalInstance = new PublicClientApplication({
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
   
-  // Aquí le decimos que a cualquier petición hacia tu backend le pegue este Scope
-  const backendUrl = 'http://localhost:8081/api/';
+  // Pon la ruta EXACTA sin asteriscos
+  const backendUrl = 'http://localhost:8081/api/orders'; 
   const scope = ['api://b3dd3447-de99-4c5a-9cae-cf347f9aa7c2/access_as_user'];
   
-  protectedResourceMap.set(backendUrl + '*', scope);
+  protectedResourceMap.set(backendUrl, scope);
 
   return {
     interactionType: InteractionType.Redirect,
