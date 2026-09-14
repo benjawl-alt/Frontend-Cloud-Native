@@ -1,728 +1,246 @@
+<!-- NOTIFICACIÓN FLOTANTE (Abajo a la izquierda, sin tapar el carrito ni los botones) -->
+<div *ngIf="mostrarToast" style="position: fixed; bottom: 24px; left: 24px; z-index: 2000; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; pointer-events: none; transition: all 0.3s ease-in-out;">
+  <span style="font-size: 16px;">✓</span>
+  <span>{{ toastMensaje }}</span>
+</div>
+
 <header class="navbar">
 
   <!-- LOGO -->
   <div class="logo">
-
     <div class="logo-icon">
       P360
     </div>
-
     <span>
       Pedidos 360
     </span>
-
   </div>
-
 
   <!-- NAVEGACIÓN -->
   <nav>
-
-    <a class="active">
-      Inicio
-    </a>
-
-    <a>
-      Productos
-    </a>
-
-    <a>
-      Sucursales
-    </a>
-
-    <a>
-      Mis pedidos
-    </a>
-
+    <a class="active">Inicio</a>
+    <a>Productos</a>
+    <a>Sucursales</a>
+    <a>Mis pedidos</a>
   </nav>
-
 
   <!-- ACCIONES -->
   <div class="actions">
 
-
-    <!-- =========================
-         BUSCADOR
-    ========================== -->
-
-    <button
-      class="search"
-      type="button"
-    >
+    <!-- BUSCADOR -->
+    <button class="search" type="button">
       🔍
     </button>
 
-
-
-    <!-- =========================
-         CARRITO
-    ========================== -->
-
-    <button
-      class="cart"
-      type="button"
-    >
-
-      🛒
-
-      <span>
-        2
-      </span>
-
+    <!-- CARRITO DINÁMICO CON EFECTO DE PULSO -->
+    <button 
+      class="cart" 
+      type="button" 
+      (click)="toggleCart()" 
+      [style.transform]="animarCarrito ? 'scale(1.2)' : 'scale(1)'"
+      [style.transition]="'transform 0.2s ease-in-out'"
+      style="position: relative; cursor: pointer;">
+      <span>🛒</span>
+      <span [style.background]="animarCarrito ? '#10b981' : ''">{{ totalItemsCarrito }}</span>
     </button>
-    <!-- ZONA DE PRUEBAS PARA BACKEND -->
-<div style="margin-top: 40px; padding: 20px; text-align: center; background-color: #f8f9fa; border-radius: 8px; border: 1px dashed #ccc;">
-  <h3>Prueba de Seguridad (Azure AD a Spring Boot)</h3>
-  <p>Presiona F12 (pestaña Network/Red) y haz clic en el botón para verificar que viaja el Token JWT.</p>
-  
-  <button 
-    (click)="crearPedidoPrueba()" 
-    style="padding: 12px 24px; background-color: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
-    Enviar Pedido Seguro a ms-order
-  </button>
-</div>
 
-
-    <!-- =========================
-         PERFIL
-    ========================== -->
-
+    <!-- PERFIL -->
     <div class="profile-container">
-
-
-      <!-- BOTÓN DEL PERFIL -->
-
-      <button
-        class="profile"
-        type="button"
-        (click)="toggleMenu()"
-      >
-
+      <button class="profile" type="button" (click)="toggleMenu()">
         {{ userInitial }}
-
       </button>
 
-
-
-      <!-- =========================
-           MENÚ DEL PERFIL
-      ========================== -->
-
-      <div
-        class="profile-menu"
-        *ngIf="menuOpen"
-      >
-
-
-        <!-- =========================
-             INFORMACIÓN DEL USUARIO
-        ========================== -->
-
+      <div class="profile-menu" *ngIf="menuOpen">
         <div class="profile-menu-header">
-
-
-          
-
-
-          <!-- DATOS DEL USUARIO -->
-
           <div class="profile-info">
-
-            <strong>
-              {{ user?.name || 'Usuario' }}
-            </strong>
-
-            <small>
-              Cuenta Microsoft
-            </small>
-
+            <strong>{{ user?.name || 'Usuario' }}</strong>
+            <small>Cuenta Microsoft</small>
           </div>
-
         </div>
-
-
-
-        <!-- SEPARADOR -->
 
         <hr>
 
-
-
-        <!-- =========================
-             DASHBOARD ADMINISTRADOR
-             
-             SOLO APARECE SI:
-             isAdmin === true
-        ========================== -->
-
-        <button
-          *ngIf="isAdmin"
-          class="menu-button dashboard-button"
-          type="button"
-          (click)="goToAdmin()"
-        >
-
-          <span class="menu-icon">
-            ⚙️
-          </span>
-
-          <span>
-            Dashboard
-          </span>
-
+        <button *ngIf="isAdmin" class="menu-button dashboard-button" type="button" (click)="goToAdmin()">
+          <span class="menu-icon">⚙️</span>
+          <span>Dashboard</span>
         </button>
 
-
-
-        <!-- =========================
-             CERRAR SESIÓN
-        ========================== -->
-
-        <button
-          class="logout-button"
-          type="button"
-          (click)="logout()"
-        >
-
-          <span class="logout-icon">
-            🚪
-          </span>
-
-          <span>
-            Cerrar sesión
-          </span>
-
+        <button class="logout-button" type="button" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          <span>Cerrar sesión</span>
         </button>
-
-
       </div>
-
     </div>
 
   </div>
 
 </header>
 
+<!-- MODAL / LATERAL DEL CARRITO -->
+<div *ngIf="cartOpen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: flex-end;">
+  <div style="background: #ffffff; width: 100%; max-width: 400px; height: 100%; box-shadow: -2px 0 10px rgba(0,0,0,0.15); display: flex; flex-direction: column; padding: 24px; box-sizing: border-box;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+      <h2 style="margin: 0; font-size: 20px;">Tu Carrito de Compras</h2>
+      <button (click)="toggleCart()" style="background: none; border: none; font-size: 20px; cursor: pointer;">✕</button>
+    </div>
 
+    <!-- LISTA DE PRODUCTOS EN EL CARRITO -->
+    <div style="flex: 1; overflow-y: auto; padding: 15px 0;">
+      <div *ngIf="cart.length === 0" style="text-align: center; color: #888; margin-top: 40px;">
+        <p>No tienes productos en el carrito.</p>
+      </div>
 
-<!-- =====================================================
-     CONTENIDO PRINCIPAL
-===================================================== -->
+      <div *ngFor="let item of cart" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px dashed #eee; padding-bottom: 12px;">
+        <div style="flex: 1;">
+          <h4 style="margin: 0 0 4px 0; font-size: 15px;">{{ item.product.name }}</h4>
+          <span style="color: #666; font-size: 13px;">${{ item.product.price }} c/u</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button (click)="decrementarCantidad(item)" style="padding: 2px 8px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer;">-</button>
+          <span style="font-weight: bold;">{{ item.quantity }}</span>
+          <button (click)="incrementarCantidad(item)" style="padding: 2px 8px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer;">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOTAL Y BOTÓN DE CHECKOUT -->
+    <div *ngIf="cart.length > 0" style="border-top: 1px solid #eee; padding-top: 16px;">
+      <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; margin-bottom: 16px;">
+        <span>Total:</span>
+        <span style="color: #d97706;">${{ totalPagar }}</span>
+      </div>
+
+      <button (click)="confirmarPedido()" style="width: 100%; padding: 12px; background: #d97706; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer;">
+        Confirmar Pedido (ms-order)
+      </button>
+    </div>
+
+  </div>
+</div>
 
 <main>
 
-
-  <!-- =========================
-       BUSCADOR
-  ========================== -->
-
   <section class="search-section">
-
-    <h1>
-      ¿Qué quieres pedir hoy?
-    </h1>
-
-    <p>
-      Encuentra productos de panaderías, pastelerías y cafeterías.
-    </p>
-
-
+    <h1>¿Qué quieres pedir hoy?</h1>
+    <p>Encuentra productos de panaderías, pastelerías y cafeterías.</p>
     <div class="search-box">
-
-      <span>
-        🔍
-      </span>
-
-      <input
-        type="text"
-        placeholder="Busca pan, café, pasteles..."
-      >
-
+      <span>🔍</span>
+      <input type="text" placeholder="Busca pan, café, pasteles...">
     </div>
-
   </section>
-
-
-
-  <!-- =========================
-       BANNER
-  ========================== -->
 
   <section class="hero">
-
-
     <div class="hero-text">
-
-      <span class="tag">
-        PEDIDOS ONLINE
-      </span>
-
-
-      <h2>
-
-        Todo lo que te gusta,
-
-        <span>
-          en un solo lugar.
-        </span>
-
-      </h2>
-
-
-      <p>
-
-        Compra productos de las mejores panaderías,
-        pastelerías y cafeterías de tu zona.
-
-      </p>
-
-
-      <button>
-        Ver productos
-      </button>
-
+      <span class="tag">PEDIDOS ONLINE</span>
+      <h2>Todo lo que te gusta, <span>en un solo lugar.</span></h2>
+      <p>Compra productos de las mejores panaderías, pastelerías y cafeterías de tu zona.</p>
+      <button (click)="obtenerProductos()">Ver productos</button>
     </div>
-
-
-
     <div class="hero-image">
-
-      🥐
-      ☕
-      🎂
-
+      🥐 ☕ 🎂
     </div>
-
   </section>
 
-
-
-  <!-- =========================
-       CATEGORÍAS
-  ========================== -->
-
   <section class="section">
-
-
     <div class="section-header">
-
       <div>
-
-        <h2>
-          Explora por categoría
-        </h2>
-
-        <p>
-          Encuentra lo que estás buscando
-        </p>
-
+        <h2>Explora por categoría</h2>
+        <p>Encuentra lo que estás buscando</p>
       </div>
-
     </div>
-
-
-
     <div class="categories">
-
-
-      <!-- PANADERÍA -->
-
       <div class="category">
-
-        <div class="category-icon">
-          🥖
-        </div>
-
-        <h3>
-          Panadería
-        </h3>
-
-        <p>
-          Pan fresco y productos artesanales
-        </p>
-
-        <button>
-          Ver productos →
-        </button>
-
+        <div class="category-icon">🥖</div>
+        <h3>Panadería</h3>
+        <p>Pan fresco y productos artesanales</p>
+        <button>Ver productos →</button>
       </div>
-
-
-
-      <!-- PASTELERÍA -->
-
       <div class="category">
-
-        <div class="category-icon">
-          🎂
-        </div>
-
-        <h3>
-          Pastelería
-        </h3>
-
-        <p>
-          Pasteles, tortas y dulces
-        </p>
-
-        <button>
-          Ver productos →
-        </button>
-
+        <div class="category-icon">🎂</div>
+        <h3>Pastelería</h3>
+        <p>Pasteles, tortas y dulces</p>
+        <button>Ver productos →</button>
       </div>
-
-
-
-      <!-- CAFETERÍA -->
-
       <div class="category">
-
-        <div class="category-icon">
-          ☕
-        </div>
-
-        <h3>
-          Cafetería
-        </h3>
-
-        <p>
-          Café y acompañamientos
-        </p>
-
-        <button>
-          Ver productos →
-        </button>
-
+        <div class="category-icon">☕</div>
+        <h3>Cafetería</h3>
+        <p>Café y acompañamientos</p>
+        <button>Ver productos →</button>
       </div>
-
     </div>
-
   </section>
 
-
-
-  <!-- =========================
-       PRODUCTOS
-  ========================== -->
-
+  <!-- PRODUCTOS DESDE ms-product -->
   <section class="section">
-
-
     <div class="section-header">
-
       <div>
-
-        <h2>
-          Productos destacados
-        </h2>
-
-        <p>
-          Los favoritos de nuestros clientes
-        </p>
-
+        <h2>Productos destacados</h2>
+        <p>Los favoritos de nuestros clientes (en tiempo real desde MongoDB)</p>
       </div>
-
-
-      <a class="see-all">
-        Ver todos →
-      </a>
-
+      <a class="see-all" (click)="obtenerProductos()" style="cursor: pointer;">Actualizar catálogo ⟳</a>
     </div>
 
-
-
-    <div class="products">
-
-
-      <!-- CROISSANT -->
-
-      <article class="product-card">
-
-        <div class="product-image">
-          🥐
-        </div>
-
-
-        <div class="product-info">
-
-          <span class="store">
-            Panadería Central
-          </span>
-
-          <h3>
-            Croissant artesanal
-          </h3>
-
-          <p>
-            Recién horneado
-          </p>
-
-
-          <div class="product-bottom">
-
-            <strong>
-              $2.500
-            </strong>
-
-            <button>
-              Agregar +
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-
-      <!-- PAN AMASADO -->
-
-      <article class="product-card">
-
-        <div class="product-image">
-          🍞
-        </div>
-
-
-        <div class="product-info">
-
-          <span class="store">
-            Panadería Providencia
-          </span>
-
-          <h3>
-            Pan amasado
-          </h3>
-
-          <p>
-            6 unidades
-          </p>
-
-
-          <div class="product-bottom">
-
-            <strong>
-              $3.500
-            </strong>
-
-            <button>
-              Agregar +
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-
-      <!-- CAFÉ -->
-
-      <article class="product-card">
-
-        <div class="product-image">
-          ☕
-        </div>
-
-
-        <div class="product-info">
-
-          <span class="store">
-            Café 360
-          </span>
-
-          <h3>
-            Café Latte
-          </h3>
-
-          <p>
-            Café espresso y leche
-          </p>
-
-
-          <div class="product-bottom">
-
-            <strong>
-              $3.200
-            </strong>
-
-            <button>
-              Agregar +
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-
-      <!-- TORTA -->
-
-      <article class="product-card">
-
-        <div class="product-image">
-          🍰
-        </div>
-
-
-        <div class="product-info">
-
-          <span class="store">
-            Dulce Momento
-          </span>
-
-          <h3>
-            Porción de torta
-          </h3>
-
-          <p>
-            Chocolate y crema
-          </p>
-
-
-          <div class="product-bottom">
-
-            <strong>
-              $4.500
-            </strong>
-
-            <button>
-              Agregar +
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
-
+    <div *ngIf="cargandoProductos" style="padding: 24px; text-align: center; color: #666; font-weight: 500;">
+      Cargando productos desde ms-product...
     </div>
 
+    <div *ngIf="errorProductos" style="padding: 16px; margin-bottom: 20px; background-color: #fee2e2; color: #dc2626; border-radius: 8px; text-align: center;">
+      {{ errorProductos }}
+    </div>
+
+    <div class="products" *ngIf="products.length > 0">
+      <article class="product-card" *ngFor="let prod of products">
+        <div class="product-image">🥐</div>
+
+        <div class="product-info">
+          <span class="store">Stock: {{ prod.stock }} unidades</span>
+          <h3>{{ prod.name }}</h3>
+          <p>{{ prod.description }}</p>
+
+          <div class="product-bottom">
+            <strong>${{ prod.price }}</strong>
+            <button type="button" (click)="agregarAlCarrito(prod)">
+              Agregar +
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
   </section>
-
-
-
-  <!-- =========================
-       LOCALES
-  ========================== -->
 
   <section class="stores-section">
-
-
     <div>
-
-      <h2>
-        Locales disponibles
-      </h2>
-
-      <p>
-
-        Compra directamente en establecimientos asociados
-        a Pedidos 360.
-
-      </p>
-
+      <h2>Locales disponibles</h2>
+      <p>Compra directamente en establecimientos asociados a Pedidos 360.</p>
     </div>
-
-
-
     <div class="store-list">
-
-
-      <!-- LOCAL 1 -->
-
       <div class="store-card">
-
-        <div class="store-logo">
-          🥖
-        </div>
-
-
+        <div class="store-logo">🥖</div>
         <div>
-
-          <h3>
-            Panadería Central
-          </h3>
-
-          <p>
-            ⭐ 4.8 · Abierto ahora
-          </p>
-
+          <h3>Panadería Central</h3>
+          <p>⭐ 4.8 · Abierto ahora</p>
         </div>
-
-
-        <button>
-          Ver local
-        </button>
-
+        <button>Ver local</button>
       </div>
-
-
-
-      <!-- LOCAL 2 -->
-
       <div class="store-card">
-
-        <div class="store-logo">
-          ☕
-        </div>
-
-
+        <div class="store-logo">☕</div>
         <div>
-
-          <h3>
-            Café Providencia
-          </h3>
-
-          <p>
-            ⭐ 4.7 · Abierto ahora
-          </p>
-
+          <h3>Café Providencia</h3>
+          <p>⭐ 4.7 · Abierto ahora</p>
         </div>
-
-
-        <button>
-          Ver local
-        </button>
-
+        <button>Ver local</button>
       </div>
-
-
-
-      <!-- LOCAL 3 -->
-
       <div class="store-card">
-
-        <div class="store-logo">
-          🎂
-        </div>
-
-
+        <div class="store-logo">🎂</div>
         <div>
-
-          <h3>
-            Dulce Momento
-          </h3>
-
-          <p>
-            ⭐ 4.9 · Abierto ahora
-          </p>
-
+          <h3>Dulce Momento</h3>
+          <p>⭐ 4.9 · Abierto ahora</p>
         </div>
-
-
-        <button>
-          Ver local
-        </button>
-
+        <button>Ver local</button>
       </div>
-
     </div>
-
   </section>
-
 
 </main>

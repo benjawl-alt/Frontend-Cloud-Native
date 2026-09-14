@@ -1,22 +1,21 @@
 import { ApplicationConfig, provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
-// 1. Agregamos HTTP_INTERCEPTORS y withInterceptorsFromDi
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import {
   MSAL_INSTANCE,
-  MSAL_INTERCEPTOR_CONFIG, // <-- Nuevo
+  MSAL_INTERCEPTOR_CONFIG,
   MsalService,
   MsalGuard,
   MsalBroadcastService,
-  MsalInterceptor,         // <-- Nuevo
-  MsalInterceptorConfiguration // <-- Nuevo
+  MsalInterceptor,
+  MsalInterceptorConfiguration
 } from '@azure/msal-angular';
 
 import {
   PublicClientApplication,
   BrowserCacheLocation,
-  InteractionType // <-- Nuevo
+  InteractionType
 } from '@azure/msal-browser';
 
 import { routes } from './app.routes';
@@ -33,15 +32,14 @@ const msalInstance = new PublicClientApplication({
   }
 });
 
-// 2. Creamos la función que configura qué URLs llevarán el token
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  
-  // Pon la ruta EXACTA sin asteriscos
-  const backendUrl = 'http://localhost:8081/api/orders'; 
+
   const scope = ['api://b3dd3447-de99-4c5a-9cae-cf347f9aa7c2/access_as_user'];
-  
-  protectedResourceMap.set(backendUrl, scope);
+
+  // Rutas protegidas para ambos microservicios (8081 y 8082)
+  protectedResourceMap.set('http://localhost:8081/api/orders', scope);
+  protectedResourceMap.set('http://localhost:8082/api/products', scope);
 
   return {
     interactionType: InteractionType.Redirect,
@@ -52,20 +50,17 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    
-    // 3. Habilitamos los interceptores en Angular
+
     provideHttpClient(withInterceptorsFromDi()),
 
     {
       provide: MSAL_INSTANCE,
       useValue: msalInstance
     },
-    // 4. Inyectamos la configuración del interceptor que creamos arriba
     {
       provide: MSAL_INTERCEPTOR_CONFIG,
       useFactory: MSALInterceptorConfigFactory
     },
-    // 5. Inyectamos la clase del interceptor de MSAL
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
