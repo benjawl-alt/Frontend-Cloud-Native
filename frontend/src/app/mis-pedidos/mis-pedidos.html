@@ -1,0 +1,88 @@
+<div class="page-container">
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon">P360</div>
+      <span>Pedidos 360</span>
+    </div>
+
+    <nav>
+      <a routerLink="/inicio" routerLinkActive="active">Inicio</a>
+      <a routerLink="/productos" routerLinkActive="active">Productos</a>
+      <a routerLink="/mis-pedidos" routerLinkActive="active" class="active">Mis pedidos</a>
+    </nav>
+
+    <div class="actions">
+      <button class="search" type="button">🔍</button>
+      <button class="cart-btn" type="button" routerLink="/productos">
+        🛒 <span>{{ totalItemsCarrito }}</span>
+      </button>
+
+      <div class="profile-container">
+        <button class="profile" type="button" (click)="toggleMenu()">
+          {{ userInitial }}
+        </button>
+        <div class="profile-menu" *ngIf="menuOpen">
+          <div class="profile-info">
+            <strong>{{ user?.name || 'Usuario' }}</strong>
+            <small>Cuenta Microsoft</small>
+          </div>
+          <hr>
+          <button class="logout-button" type="button" (click)="logout()">🚪 Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="content">
+
+    <!-- HEADER DE LA PÁGINA -->
+    <header class="page-header">
+      <div class="header-text">
+        <span class="subtitle">CARRITO Y PEDIDOS</span>
+        <h1>Mis pedidos</h1>
+        <p>Revisa tu carrito actual y el historial de pedidos confirmados.</p>
+      </div>
+      <button class="btn-primary" routerLink="/productos">+ Seguir comprando</button>
+    </header>
+
+    <!-- SECCIÓN CARRITO ACTUAL -->
+    <section class="section-block">
+      <div class="section-title">
+        <div>
+          <span class="subtitle">CARRITO ACTUAL</span>
+          <h2>Tu carrito</h2>
+          <p>Revisa las cantidades antes de confirmar tu pedido.</p>
+        </div>
+        <span class="badge">{{ cart.length }} productos</span>
+      </div>
+
+      <div class="empty-card dashed-border">
+        <span class="empty-icon">🛒</span>
+        <h3>Tu carrito está vacío</h3>
+        <p>Explora los productos disponibles y agrega los que quieras pedir.</p>
+        <button class="btn-primary" routerLink="/productos">Ver productos</button>
+      </div>
+    </section>
+
+    <!-- SECCIÓN HISTORIAL -->
+    <section class="section-block">
+      <div class="section-title">
+        <div>
+          <span class="subtitle">HISTORIAL</span>
+          <h2>Pedidos confirmados</h2>
+          <p>Consulta las compras que has realizado en Pedidos 360.</p>
+        </div>
+      </div>
+
+      <div class="empty-card solid-border">
+        <span class="empty-icon">📦</span>
+        <h3>Aún no tienes pedidos confirmados</h3>
+        <p>Cuando confirmes tu carrito, tus pedidos aparecerán aquí.</p>
+      </div>
+    </section>
+
+  </main>
+</div>

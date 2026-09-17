@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router'; // <-- Agregado
 import { MsalService } from '@azure/msal-angular';
 import { AccountInfo } from '@azure/msal-browser';
 import { HttpClient } from '@angular/common/http';
@@ -20,7 +20,11 @@ export interface CartItem {
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    RouterLink,        // <-- Agregado para habilitar navegación
+    RouterLinkActive   // <-- Agregado para marcar menú activo
+  ],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -38,7 +42,6 @@ export class Home implements OnInit {
 
   cart: CartItem[] = [];
 
-  // Variables para la notificación y animación visual
   toastMensaje = '';
   mostrarToast = false;
   animarCarrito = false;
@@ -116,7 +119,6 @@ export class Home implements OnInit {
     }
   }
 
-  // Notificación flotante y pulso en el ícono
   private dispararFeedbackVisual(mensaje: string): void {
     this.toastMensaje = mensaje;
     this.mostrarToast = true;
