@@ -1,34 +1,19 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router'; // <-- Agregado
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { AccountInfo } from '@azure/msal-browser';
 import { HttpClient } from '@angular/common/http';
-
-export interface Product {
-  id?: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-}
-
-export interface CartItem {
-  product: Product;
-  quantity: number;
-}
+import { Subscription } from 'rxjs';
+import { CartService, CartItem, Product } from '../cart.service';
 
 @Component({
   selector: 'app-home',
-  imports: [
-    CommonModule,
-    RouterLink,        // <-- Agregado para habilitar navegación
-    RouterLinkActive   // <-- Agregado para marcar menú activo
-  ],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
 
   menuOpen = false;
   cartOpen = false;
@@ -41,6 +26,7 @@ export class Home implements OnInit {
   errorProductos = '';
 
   cart: CartItem[] = [];
+  private cartSub!: Subscription;
 
   toastMensaje = '';
   mostrarToast = false;
@@ -51,7 +37,8 @@ export class Home implements OnInit {
     private msalService: MsalService,
     private router: Router,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +65,16 @@ export class Home implements OnInit {
     }
 
     this.obtenerProductos();
+
+    this.cartSub = this.cartService.cart$.subscribe(cart => {
+      this.cart = cart;
+      this.cdr.detectChanges();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.cartSub?.unsubscribe();
+    clearTimeout(this.toastTimeout);
   }
 
   obtenerProductos(): void {
@@ -104,18 +101,12 @@ export class Home implements OnInit {
   }
 
   agregarAlCarrito(prod: Product): void {
-    const itemExistente = this.cart.find(item => item.product.name === prod.name);
+    const resultado = this.cartService.addToCart(prod);
 
-    if (itemExistente) {
-      if (itemExistente.quantity < prod.stock) {
-        itemExistente.quantity++;
-        this.dispararFeedbackVisual(`+1 ${prod.name} agregado`);
-      } else {
-        alert(`Has alcanzado el límite de existencias (${prod.stock}) para este producto.`);
-      }
-    } else {
-      this.cart.push({ product: prod, quantity: 1 });
+    if (resultado.ok) {
       this.dispararFeedbackVisual(`¡${prod.name} agregado al carrito!`);
+    } else if (resultado.reason === 'stock-maximo') {
+      alert(`Has alcanzado el límite de existencias (${prod.stock}) para este producto.`);
     }
   }
 
@@ -135,25 +126,19 @@ export class Home implements OnInit {
   }
 
   incrementarCantidad(item: CartItem): void {
-    if (item.quantity < item.product.stock) {
-      item.quantity++;
-    }
+    this.cartService.incrementar(item);
   }
 
   decrementarCantidad(item: CartItem): void {
-    if (item.quantity > 1) {
-      item.quantity--;
-    } else {
-      this.cart = this.cart.filter(i => i !== item);
-    }
+    this.cartService.decrementar(item);
   }
 
   get totalItemsCarrito(): number {
-    return this.cart.reduce((total, item) => total + item.quantity, 0);
+    return this.cartService.totalItems;
   }
 
   get totalPagar(): number {
-    return this.cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    return this.cartService.totalPagar;
   }
 
   confirmarPedido(): void {
@@ -162,20 +147,9 @@ export class Home implements OnInit {
       return;
     }
 
-    const payload = {
-      items: this.cart.map(item => ({
-        productName: item.product.name,
-        unitPrice: item.product.price,
-        quantity: item.quantity
-      })),
-      totalAmount: this.totalPagar,
-      dispatchMethod: 'RETIRO_TIENDA'
-    };
-
-    this.http.post('http://localhost:8081/api/orders', payload).subscribe({
+    this.cartService.confirmarPedido().subscribe({
       next: () => {
         alert('¡Pedido generado y guardado exitosamente en MongoDB!');
-        this.cart = [];
         this.cartOpen = false;
         this.cdr.detectChanges();
       },

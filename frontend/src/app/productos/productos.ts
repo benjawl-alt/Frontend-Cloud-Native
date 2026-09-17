@@ -1,59 +1,60 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { MsalService } from '@azure/msal-angular';
 import { AccountInfo } from '@azure/msal-browser';
+import { Subscription } from 'rxjs';
 import { ProductosService, Product } from './productos.service';
-
-export interface CartItem {
-  product: Product;
-  quantity: number;
-}
+import { CartService, CartItem } from '../cart.service';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterLink
-  ],
+  imports: [CommonModule, RouterLink],
   templateUrl: './productos.html',
   styleUrl: './productos.css'
 })
-export class Productos implements OnInit {
+export class Productos implements OnInit, OnDestroy {
 
   productos: Product[] = [];
   cargando = true;
   error = '';
 
-  // Control de sesión y menú
   menuOpen = false;
   user: AccountInfo | null = null;
   userInitial = 'U';
   isAdmin = false;
 
-  // Carrito de compras
   cart: CartItem[] = [];
   cartOpen = false;
 
-  // Notificación tipo toast
   mostrarToast = false;
   toastMensaje = '';
   animarCarrito = false;
   private toastTimeout: any;
+  private cartSub!: Subscription;
 
   constructor(
     private productosService: ProductosService,
     private msalService: MsalService,
-    private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
     this.resolverUsuario();
     this.cargarProductos();
+
+    this.cartSub = this.cartService.cart$.subscribe(cart => {
+      this.cart = cart;
+      this.cdr.detectChanges();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.cartSub?.unsubscribe();
+    clearTimeout(this.toastTimeout);
   }
 
   resolverUsuario(): void {
@@ -108,51 +109,34 @@ export class Productos implements OnInit {
     });
   }
 
-  // Lógica del Carrito
   toggleCart(): void {
     this.cartOpen = !this.cartOpen;
   }
 
   agregarAlCarrito(producto: Product): void {
-    if (producto.stock <= 0) {
-      return;
-    }
+    const resultado = this.cartService.addToCart(producto);
 
-    const item = this.cart.find(i => i.product.name === producto.name);
-
-    if (item) {
-      if (item.quantity < producto.stock) {
-        item.quantity++;
-        this.mostrarNotificacion(`+1 ${producto.name} agregado`);
-      } else {
-        alert(`Stock máximo disponible alcanzado (${producto.stock}).`);
-      }
-    } else {
-      this.cart.push({ product: producto, quantity: 1 });
+    if (resultado.ok) {
       this.mostrarNotificacion(`¡${producto.name} agregado al carrito!`);
+    } else if (resultado.reason === 'stock-maximo') {
+      alert(`Stock máximo disponible alcanzado (${producto.stock}).`);
     }
   }
 
   incrementarCantidad(item: CartItem): void {
-    if (item.quantity < item.product.stock) {
-      item.quantity++;
-    }
+    this.cartService.incrementar(item);
   }
 
   decrementarCantidad(item: CartItem): void {
-    if (item.quantity > 1) {
-      item.quantity--;
-    } else {
-      this.cart = this.cart.filter(i => i !== item);
-    }
+    this.cartService.decrementar(item);
   }
 
   get totalItemsCarrito(): number {
-    return this.cart.reduce((acc, item) => acc + item.quantity, 0);
+    return this.cartService.totalItems;
   }
 
   get totalPagar(): number {
-    return this.cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+    return this.cartService.totalPagar;
   }
 
   confirmarPedido(): void {
@@ -161,22 +145,11 @@ export class Productos implements OnInit {
       return;
     }
 
-    const payload = {
-      items: this.cart.map(item => ({
-        productName: item.product.name,
-        unitPrice: item.product.price,
-        quantity: item.quantity
-      })),
-      totalAmount: this.totalPagar,
-      dispatchMethod: 'RETIRO_TIENDA'
-    };
-
-    this.http.post('http://localhost:8081/api/orders', payload).subscribe({
+    this.cartService.confirmarPedido().subscribe({
       next: () => {
         alert('¡Pedido realizado con éxito!');
-        this.cart = [];
         this.cartOpen = false;
-        this.cargarProductos(); // Refresca catálogo para reflejar stock actualizado
+        this.cargarProductos();
       },
       error: (err) => {
         console.error('Error al registrar pedido:', err);
@@ -206,8 +179,6 @@ export class Productos implements OnInit {
 
   logout(): void {
     this.menuOpen = false;
-    this.msalService.logoutRedirect({
-      postLogoutRedirectUri: window.location.origin
-    });
+    this.msalService.logoutRedirect({ postLogoutRedirectUri: window.location.origin });
   }
 }

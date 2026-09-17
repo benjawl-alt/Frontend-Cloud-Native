@@ -102,3 +102,21 @@ nav a.active { color: #2563eb; font-weight: bold; }
 .empty-icon { font-size: 40px; filter: grayscale(100%); opacity: 0.6; margin-bottom: 10px; }
 .empty-card h3 { margin: 0; font-size: 18px; color: #1e293b; }
 .empty-card p { color: #64748b; margin: 0 0 15px; font-size: 14px; }
+.cart-list { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+.cart-list-item { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+.cart-list-item:last-of-type { border-bottom: none; }
+.cart-item-info { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.cart-item-info span { color: #64748b; font-size: 13px; }
+.cart-item-qty { display: flex; align-items: center; gap: 10px; }
+.cart-item-qty button { width: 26px; height: 26px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.cart-item-subtotal { min-width: 90px; text-align: right; color: #1e293b; }
+.cart-total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; margin-top: 6px; font-size: 17px; }
+.cart-total-row strong { color: #2563eb; }
+
+.orders-list { display: flex; flex-direction: column; gap: 14px; }
+.order-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 18px 20px; }
+.order-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.order-card-header strong { color: #2563eb; }
+.order-card-header small { color: #94a3b8; }
+.order-items { color: #64748b; font-size: 13px; margin: 0 0 6px; }
+.order-total { display: flex; justify-content: space-between; font-weight: bold; color: #1e293b; padding-top: 10px; margin-top: 6px; border-top: 1px dashed #e2e8f0; }

@@ -4,53 +4,23 @@
 
 <header class="admin-navbar">
 
-  <!-- LOGO -->
-
   <div class="admin-brand">
-
-    <div class="admin-logo">
-      P360
-    </div>
-
+    <div class="admin-logo">P360</div>
     <div class="brand-text">
-
-      <strong>
-        Pedidos 360
-      </strong>
-
-      <span>
-        Panel de administración
-      </span>
-
+      <strong>Pedidos 360</strong>
+      <span>Panel de administración</span>
     </div>
-
   </div>
 
-
-  <!-- USUARIO -->
-
   <div class="admin-user">
-
-    <div class="admin-avatar">
-      A
-    </div>
-
+    <div class="admin-avatar">A</div>
     <div class="admin-user-info">
-
-      <strong>
-        Administrador
-      </strong>
-
-      <span>
-        Cuenta Microsoft
-      </span>
-
+      <strong>Administrador</strong>
+      <span>Cuenta Microsoft</span>
     </div>
-
   </div>
 
 </header>
-
 
 
 <!-- ================================
@@ -59,618 +29,223 @@
 
 <main class="admin-container">
 
-
-  <!-- ENCABEZADO -->
-
   <section class="admin-header">
-
     <div>
-
-      <span class="admin-label">
-        ADMINISTRACIÓN
-      </span>
-
-      <h1>
-        Dashboard
-      </h1>
-
-      <p>
-        Bienvenido al panel de administración de Pedidos 360.
-      </p>
-
+      <span class="admin-label">ADMINISTRACIÓN</span>
+      <h1>Dashboard</h1>
+      <p>Bienvenido al panel de administración de Pedidos 360.</p>
     </div>
-
   </section>
 
+  <div *ngIf="cargando" style="padding:20px; text-align:center; color:#6b7280;">Cargando datos...</div>
+  <div *ngIf="error" style="padding:16px; margin-bottom:20px; background:#fee2e2; color:#dc2626; border-radius:8px; text-align:center;">{{ error }}</div>
 
-
-  <!-- ================================
-       ESTADÍSTICAS
-  ================================ -->
-
+  <!-- ESTADÍSTICAS -->
   <section class="stats">
-
-
-    <!-- PEDIDOS -->
-
     <article class="stat-card">
-
-      <div class="stat-icon">
-        🛒
-      </div>
-
+      <div class="stat-icon">🛒</div>
       <div class="stat-content">
-
-        <span>
-          Pedidos hoy
-        </span>
-
-        <strong>
-          128
-        </strong>
-
-        <small class="positive">
-          ↑ 12% esta semana
-        </small>
-
+        <span>Pedidos totales</span>
+        <strong>{{ totalPedidos }}</strong>
+        <small>Registrados en ms-order</small>
       </div>
-
     </article>
 
-
-
-    <!-- CLIENTES -->
-
     <article class="stat-card">
-
-      <div class="stat-icon">
-        👥
-      </div>
-
+      <div class="stat-icon">💰</div>
       <div class="stat-content">
-
-        <span>
-          Clientes registrados
-        </span>
-
-        <strong>
-          1.248
-        </strong>
-
-        <small class="positive">
-          ↑ 8% este mes
-        </small>
-
+        <span>Ventas totales</span>
+        <strong>{{ formatoPrecio(ventasTotales) }}</strong>
+        <small>Suma de todos los pedidos</small>
       </div>
-
     </article>
 
-
-
-    <!-- LOCALES -->
-
     <article class="stat-card">
-
-      <div class="stat-icon">
-        🏪
-      </div>
-
+      <div class="stat-icon">📦</div>
       <div class="stat-content">
-
-        <span>
-          Locales asociados
-        </span>
-
-        <strong>
-          36
-        </strong>
-
-        <small>
-          Activos actualmente
-        </small>
-
+        <span>Productos registrados</span>
+        <strong>{{ totalProductos }}</strong>
+        <small>{{ productosSinStock }} agotados</small>
       </div>
-
     </article>
 
-
-
-    <!-- VENTAS -->
-
     <article class="stat-card">
-
-      <div class="stat-icon">
-        💰
-      </div>
-
+      <div class="stat-icon">📊</div>
       <div class="stat-content">
-
-        <span>
-          Ventas de hoy
-        </span>
-
-        <strong>
-          $485.000
-        </strong>
-
-        <small class="positive">
-          ↑ 8% respecto ayer
-        </small>
-
+        <span>Ticket promedio</span>
+        <strong>{{ formatoPrecio(ticketPromedio) }}</strong>
+        <small>Por pedido</small>
       </div>
-
     </article>
-
   </section>
 
-
-
-  <!-- ================================
-       ADMINISTRACIÓN
-  ================================ -->
-
+  <!-- GESTIÓN DE PRODUCTOS -->
   <section class="admin-section">
-
-    <div class="section-heading">
-
-      <h2>
-        Administración
-      </h2>
-
-      <p>
-        Gestiona los principales recursos de Pedidos 360.
-      </p>
-
+    <div class="section-heading" style="display:flex; justify-content:space-between; align-items:flex-end;">
+      <div>
+        <h2>Productos</h2>
+        <p>Crea, edita y elimina productos del catálogo.</p>
+      </div>
+      <button class="btn-nuevo" type="button" (click)="abrirModalNuevo()">+ Nuevo producto</button>
     </div>
-
-
-    <div class="admin-grid">
-
-
-      <!-- PRODUCTOS -->
-
-      <button
-        class="admin-card"
-        type="button"
-      >
-
-        <div class="card-icon">
-          📦
-        </div>
-
-        <div class="card-content">
-
-          <strong>
-            Productos
-          </strong>
-
-          <span>
-            Crear, editar y administrar productos.
-          </span>
-
-        </div>
-
-        <div class="card-arrow">
-          →
-        </div>
-
-      </button>
-
-
-
-      <!-- LOCALES -->
-
-      <button
-        class="admin-card"
-        type="button"
-      >
-
-        <div class="card-icon">
-          🏪
-        </div>
-
-        <div class="card-content">
-
-          <strong>
-            Sucursales
-          </strong>
-
-          <span>
-            Gestionar locales y establecimientos.
-          </span>
-
-        </div>
-
-        <div class="card-arrow">
-          →
-        </div>
-
-      </button>
-
-
-
-      <!-- USUARIOS -->
-
-      <button
-        class="admin-card"
-        type="button"
-      >
-
-        <div class="card-icon">
-          👥
-        </div>
-
-        <div class="card-content">
-
-          <strong>
-            Usuarios
-          </strong>
-
-          <span>
-            Administrar usuarios y permisos.
-          </span>
-
-        </div>
-
-        <div class="card-arrow">
-          →
-        </div>
-
-      </button>
-
-
-
-      <!-- PEDIDOS -->
-
-      <button
-        class="admin-card"
-        type="button"
-      >
-
-        <div class="card-icon">
-          🛒
-        </div>
-
-        <div class="card-content">
-
-          <strong>
-            Pedidos
-          </strong>
-
-          <span>
-            Revisar y gestionar pedidos.
-          </span>
-
-        </div>
-
-        <div class="card-arrow">
-          →
-        </div>
-
-      </button>
-
-
-
-      <!-- REPORTES -->
-
-      <button
-        class="admin-card"
-        type="button"
-      >
-
-        <div class="card-icon">
-          📊
-        </div>
-
-        <div class="card-content">
-
-          <strong>
-            Reportes
-          </strong>
-
-          <span>
-            Consultar estadísticas y reportes.
-          </span>
-
-        </div>
-
-        <div class="card-arrow">
-          →
-        </div>
-
-      </button>
-
-
-
-      <!-- CONFIGURACIÓN -->
-
-      <button
-        class="admin-card"
-        type="button"
-      >
-
-        <div class="card-icon">
-          ⚙️
-        </div>
-
-        <div class="card-content">
-
-          <strong>
-            Configuración
-          </strong>
-
-          <span>
-            Configurar la plataforma.
-          </span>
-
-        </div>
-
-        <div class="card-arrow">
-          →
-        </div>
-
-      </button>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- ================================
-       PEDIDOS RECIENTES
-  ================================ -->
-
-  <section class="admin-section">
-
-    <div class="section-heading">
-
-      <h2>
-        Pedidos recientes
-      </h2>
-
-      <p>
-        Últimos pedidos realizados en la plataforma.
-      </p>
-
-    </div>
-
 
     <div class="orders-container">
-
-
-      <!-- CABECERA -->
-
-      <div class="orders-header">
-
-        <span>
-          Pedido
-        </span>
-
-        <span>
-          Cliente
-        </span>
-
-        <span>
-          Local
-        </span>
-
-        <span>
-          Total
-        </span>
-
-        <span>
-          Estado
-        </span>
-
+      <div class="products-table-header">
+        <span>Producto</span>
+        <span>Descripción</span>
+        <span>Precio</span>
+        <span>Stock</span>
+        <span>Acciones</span>
       </div>
 
-
-
-      <!-- PEDIDO 1 -->
-
-      <div class="order-row">
-
-        <span class="order-id">
-          #P360-00128
+      <div class="products-table-row" *ngFor="let producto of productos">
+        <span class="order-id">{{ producto.name }}</span>
+        <span class="prod-desc">{{ producto.description }}</span>
+        <span>{{ formatoPrecio(producto.price) }}</span>
+        <span class="status"
+              [class.completed]="producto.stock > 5"
+              [class.preparing]="producto.stock > 0 && producto.stock <= 5"
+              [class.out-stock]="producto.stock === 0">
+          {{ producto.stock }}
         </span>
-
-        <span>
-          Juan Pérez
+        <span class="product-actions">
+          <button type="button" class="icon-btn" (click)="abrirModalEditar(producto)" title="Editar">✏️</button>
+          <button type="button" class="icon-btn danger" (click)="eliminarProducto(producto)" title="Eliminar">🗑️</button>
         </span>
-
-        <span>
-          Panadería Central
-        </span>
-
-        <span>
-          $12.500
-        </span>
-
-        <span class="status completed">
-          Completado
-        </span>
-
       </div>
 
-
-
-      <!-- PEDIDO 2 -->
-
-      <div class="order-row">
-
-        <span class="order-id">
-          #P360-00127
-        </span>
-
-        <span>
-          María González
-        </span>
-
-        <span>
-          Café 360
-        </span>
-
-        <span>
-          $8.900
-        </span>
-
-        <span class="status preparing">
-          En preparación
-        </span>
-
+      <div class="empty-row" *ngIf="!cargando && productos.length === 0">
+        No hay productos registrados todavía.
       </div>
-
-
-
-      <!-- PEDIDO 3 -->
-
-      <div class="order-row">
-
-        <span class="order-id">
-          #P360-00126
-        </span>
-
-        <span>
-          Pedro Soto
-        </span>
-
-        <span>
-          Dulce Momento
-        </span>
-
-        <span>
-          $15.200
-        </span>
-
-        <span class="status delivery">
-          En despacho
-        </span>
-
-      </div>
-
-
-
-      <!-- PEDIDO 4 -->
-
-      <div class="order-row">
-
-        <span class="order-id">
-          #P360-00125
-        </span>
-
-        <span>
-          Camila Rojas
-        </span>
-
-        <span>
-          Panadería Providencia
-        </span>
-
-        <span>
-          $7.500
-        </span>
-
-        <span class="status completed">
-          Completado
-        </span>
-
-      </div>
-
     </div>
-
   </section>
 
+  <!-- PEDIDOS RECIENTES -->
+  <section class="admin-section" id="pedidos-recientes">
+    <div class="section-heading">
+      <h2>Pedidos recientes</h2>
+      <p>Últimos pedidos realizados en la plataforma.</p>
+    </div>
 
+    <div class="orders-container">
+      <div class="orders-header">
+        <span>Pedido</span>
+        <span>Cliente</span>
+        <span>Método</span>
+        <span>Total</span>
+        <span>Estado</span>
+      </div>
+
+      <div class="order-row" *ngFor="let pedido of pedidosRecientes">
+        <span class="order-id">#{{ pedido.id?.slice(-6) || '------' }}</span>
+        <span>{{ pedido.userEmail }}</span>
+        <span>{{ pedido.dispatchMethod }}</span>
+        <span>{{ formatoPrecio(pedido.totalAmount) }}</span>
+        <span class="status" [ngClass]="estadoClase(pedido.status)">{{ pedido.status }}</span>
+      </div>
+
+      <div class="empty-row" *ngIf="pedidos.length === 0">
+        Aún no se han registrado pedidos.
+      </div>
+    </div>
+  </section>
 
   <!-- ================================
        ACTIVIDAD
   ================================ -->
 
   <section class="admin-section">
-
     <div class="section-heading">
-
-      <h2>
-        Actividad reciente
-      </h2>
-
-      <p>
-        Últimos movimientos del sistema.
-      </p>
-
+      <h2>Actividad reciente</h2>
+      <p>Últimos movimientos del sistema.</p>
     </div>
-
 
     <div class="activity">
-
-
       <div class="activity-item">
-
-        <div class="activity-icon">
-          👤
-        </div>
-
+        <div class="activity-icon">👤</div>
         <div>
-
-          <strong>
-            Nuevo usuario registrado
-          </strong>
-
-          <span>
-            Hace 10 minutos
-          </span>
-
+          <strong>Nuevo usuario registrado</strong>
+          <span>Hace 10 minutos</span>
         </div>
-
       </div>
 
-
-
       <div class="activity-item">
-
-        <div class="activity-icon">
-          📦
-        </div>
-
+        <div class="activity-icon">📦</div>
         <div>
-
-          <strong>
-            Nuevo producto agregado
-          </strong>
-
-          <span>
-            Hace 25 minutos
-          </span>
-
+          <strong>Nuevo producto agregado</strong>
+          <span>Hace 25 minutos</span>
         </div>
-
       </div>
 
-
-
       <div class="activity-item">
-
-        <div class="activity-icon">
-          🛒
-        </div>
-
+        <div class="activity-icon">🛒</div>
         <div>
-
-          <strong>
-            Nuevo pedido recibido
-          </strong>
-
-          <span>
-            Hace 35 minutos
-          </span>
-
+          <strong>Nuevo pedido recibido</strong>
+          <span>Hace 35 minutos</span>
         </div>
-
       </div>
-
     </div>
-
   </section>
 
 </main>
+
+<!-- MODAL PRODUCTO -->
+<div *ngIf="modalAbierto" 
+     (click)="cerrarModal()"
+     style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.55); z-index: 3000; display: flex; align-items: center; justify-content: center;">
+  
+  <div (click)="$event.stopPropagation()"
+       style="background: white; width: 100%; max-width: 480px; border-radius: 16px; padding: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); box-sizing: border-box;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+      <h3 style="margin: 0; font-size: 19px; color: #111827; font-weight: 700;">
+        {{ modoEdicion ? 'Editar producto' : 'Nuevo producto' }}
+      </h3>
+      <button type="button" (click)="cerrarModal()" 
+              style="border: none; background: #f1f5f9; color: #6b7280; width: 30px; height: 30px; border-radius: 8px; font-size: 15px; cursor: pointer;">
+        ✕
+      </button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 12px; font-weight: 600; color: #374151;">Nombre</label>
+        <input type="text" [(ngModel)]="productoForm.name" placeholder="Nombre del producto"
+               style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; box-sizing: border-box; width: 100%;">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 12px; font-weight: 600; color: #374151;">Descripción</label>
+        <textarea [(ngModel)]="productoForm.description" rows="3" placeholder="Descripción del producto"
+                  style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; font-family: inherit; resize: vertical; box-sizing: border-box; width: 100%;"></textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 600; color: #374151;">Precio (CLP)</label>
+          <input type="number" [(ngModel)]="productoForm.price" min="0"
+                 style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; box-sizing: border-box; width: 100%;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 600; color: #374151;">Stock</label>
+          <input type="number" [(ngModel)]="productoForm.stock" min="0"
+                 style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; box-sizing: border-box; width: 100%;">
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #f1f5f9;">
+      <button type="button" (click)="cerrarModal()"
+              style="border: 1px solid #cbd5e1; background: white; color: #374151; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;">
+        Cancelar
+      </button>
+      <button type="button" [disabled]="guardando" (click)="guardarProducto()"
+              style="border: none; background: #2563eb; color: white; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;">
+        {{ guardando ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Crear producto') }}
+      </button>
+    </div>
+
+  </div>
+</div>
