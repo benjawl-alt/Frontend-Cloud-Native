@@ -40,6 +40,10 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   // Rutas protegidas para ambos microservicios (8081 y 8082)
   protectedResourceMap.set('http://localhost:8081/api/orders', scope);
   protectedResourceMap.set('http://localhost:8082/api/products', scope);
+  protectedResourceMap.set('http://localhost:8081/api/orders/*', scope);
+  protectedResourceMap.set('http://localhost:8081/api/orders', scope);
+  protectedResourceMap.set('http://localhost:8082/api/products/*', scope);
+  protectedResourceMap.set('http://localhost:8082/api/products', scope);
 
   return {
     interactionType: InteractionType.Redirect,
