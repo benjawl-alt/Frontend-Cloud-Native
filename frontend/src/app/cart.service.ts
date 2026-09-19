@@ -98,6 +98,7 @@ export class CartService {
 
     const payload = {
       items: this.cart.map(item => ({
+        productId: item.product.id,
         productName: item.product.name,
         unitPrice: item.product.price,
         quantity: item.quantity

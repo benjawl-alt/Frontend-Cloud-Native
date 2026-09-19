@@ -149,11 +149,17 @@ export class Productos implements OnInit, OnDestroy {
       next: () => {
         alert('¡Pedido realizado con éxito!');
         this.cartOpen = false;
-        this.cargarProductos();
+        this.cargarProductos(); // refresca el catálogo con el stock actualizado
       },
       error: (err) => {
         console.error('Error al registrar pedido:', err);
-        alert('Ocurrió un error al procesar el pedido con ms-order.');
+
+        if (err.status === 409) {
+          alert('Uno de los productos ya no tiene stock suficiente. Actualizamos el catálogo, revisa tu carrito.');
+          this.cargarProductos();
+        } else {
+          alert('Ocurrió un error al procesar el pedido con ms-order.');
+        }
       }
     });
   }
