@@ -16,15 +16,16 @@ import { CartService, CartItem, ConfirmedOrder } from '../cart.service';
 export class MisPedidos implements OnInit, OnDestroy {
   menuOpen = false;
   user: AccountInfo | null = null;
-  userInitial = 'U';
+  userInitial = '👤';
   isAdmin = false;
 
   cart: CartItem[] = [];
   historialPedidos: ConfirmedOrder[] = [];
 
-  // Aviso verde de compra exitosa
+  // Aviso flotante (verde = éxito, naranja = aviso)
   mostrarToast = false;
   toastMensaje = '';
+  toastTipo: 'ok' | 'aviso' = 'ok';
   private toastTimeout: any;
 
   private cartSub!: Subscription;
@@ -99,6 +100,11 @@ export class MisPedidos implements OnInit, OnDestroy {
   }
 
   confirmarPedido(): void {
+    if (!this.user) {
+      this.mostrarNotificacion('Debes iniciar sesión para confirmar tu pedido', 3000, 'aviso');
+      return;
+    }
+
     this.cartService.confirmarPedido().subscribe({
       next: () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -115,8 +121,9 @@ export class MisPedidos implements OnInit, OnDestroy {
     });
   }
 
-  private mostrarNotificacion(mensaje: string, duracion: number = 2000): void {
+  private mostrarNotificacion(mensaje: string, duracion: number = 2000, tipo: 'ok' | 'aviso' = 'ok'): void {
     this.toastMensaje = mensaje;
+    this.toastTipo = tipo;
     this.mostrarToast = true;
 
     clearTimeout(this.toastTimeout);
@@ -130,5 +137,6 @@ export class MisPedidos implements OnInit, OnDestroy {
 
   toggleMenu(): void { this.menuOpen = !this.menuOpen; }
   goToAdmin(): void { this.menuOpen = false; if (this.isAdmin) this.router.navigate(['/admin']); }
+  irALogin(): void { this.menuOpen = false; this.router.navigate(['/login']); }
   logout(): void { this.menuOpen = false; this.msalService.logoutRedirect({ postLogoutRedirectUri: window.location.origin }); }
 }

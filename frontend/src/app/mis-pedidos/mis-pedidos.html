@@ -1,12 +1,15 @@
+<!-- AVISO FLOTANTE (verde = éxito, naranja = aviso) -->
+<div
+  *ngIf="mostrarToast"
+  [style.background]="toastTipo === 'aviso' ? '#f59e0b' : '#10b981'"
+  style="position: fixed; top: 20px; right: 20px; z-index: 2100; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+  {{ toastTipo === 'aviso' ? '⚠' : '✓' }} {{ toastMensaje }}
+</div>
+
 <div class="page-container">
 
   <!-- NAVBAR -->
   <header class="navbar">
-    <div
-  *ngIf="mostrarToast"
-  style="position: fixed; top: 20px; right: 20px; z-index: 2100; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
-  ✓ {{ toastMensaje }}
-</div>
     <div class="logo">
       <div class="logo-icon">P360</div>
       <span>Pedidos 360</span>
@@ -28,13 +31,27 @@
         <button class="profile" type="button" (click)="toggleMenu()">
           {{ userInitial }}
         </button>
+
         <div class="profile-menu" *ngIf="menuOpen">
-          <div class="profile-info">
-            <strong>{{ user?.name || 'Usuario' }}</strong>
-            <small>Cuenta Microsoft</small>
-          </div>
-          <hr>
-          <button class="logout-button" type="button" (click)="logout()">🚪 Cerrar sesión</button>
+
+          <ng-container *ngIf="user; else invitado">
+            <div class="profile-info">
+              <strong>{{ user?.name || 'Usuario' }}</strong>
+              <small>Cuenta Microsoft</small>
+            </div>
+            <hr>
+            <button class="logout-button" type="button" (click)="logout()">🚪 Cerrar sesión</button>
+          </ng-container>
+
+          <ng-template #invitado>
+            <div class="profile-info">
+              <strong>Invitado</strong>
+              <small>No has iniciado sesión</small>
+            </div>
+            <hr>
+            <button class="logout-button" type="button" (click)="irALogin()">🔑 Iniciar sesión</button>
+          </ng-template>
+
         </div>
       </div>
     </div>
@@ -54,76 +71,76 @@
     </header>
 
     <section class="section-block">
-  <div class="section-title">
-    <div>
-      <span class="subtitle">CARRITO ACTUAL</span>
-      <h2>Tu carrito</h2>
-      <p>Revisa las cantidades antes de confirmar tu pedido.</p>
-    </div>
-    <span class="badge">{{ cart.length }} productos</span>
-  </div>
-
-  <div class="empty-card dashed-border" *ngIf="cart.length === 0">
-    <span class="empty-icon">🛒</span>
-    <h3>Tu carrito está vacío</h3>
-    <p>Explora los productos disponibles y agrega los que quieras pedir.</p>
-    <button class="btn-primary" routerLink="/productos">Ver productos</button>
-  </div>
-
-  <div class="cart-list" *ngIf="cart.length > 0">
-    <div class="cart-list-item" *ngFor="let item of cart">
-      <div class="cart-item-info">
-        <strong>{{ item.product.name }}</strong>
-        <span>{{ formatoPrecio(item.product.price) }} c/u</span>
+      <div class="section-title">
+        <div>
+          <span class="subtitle">CARRITO ACTUAL</span>
+          <h2>Tu carrito</h2>
+          <p>Revisa las cantidades antes de confirmar tu pedido.</p>
+        </div>
+        <span class="badge">{{ cart.length }} productos</span>
       </div>
-      <div class="cart-item-qty">
-        <button type="button" (click)="decrementarCantidad(item)">-</button>
-        <span>{{ item.quantity }}</span>
-        <button type="button" (click)="incrementarCantidad(item)">+</button>
+
+      <div class="empty-card dashed-border" *ngIf="cart.length === 0">
+        <span class="empty-icon">🛒</span>
+        <h3>Tu carrito está vacío</h3>
+        <p>Explora los productos disponibles y agrega los que quieras pedir.</p>
+        <button class="btn-primary" routerLink="/productos">Ver productos</button>
       </div>
-      <strong class="cart-item-subtotal">{{ formatoPrecio(item.product.price * item.quantity) }}</strong>
-    </div>
 
-    <div class="cart-total-row">
-      <span>Total</span>
-      <strong>{{ formatoPrecio(totalPagar) }}</strong>
-    </div>
+      <div class="cart-list" *ngIf="cart.length > 0">
+        <div class="cart-list-item" *ngFor="let item of cart">
+          <div class="cart-item-info">
+            <strong>{{ item.product.name }}</strong>
+            <span>{{ formatoPrecio(item.product.price) }} c/u</span>
+          </div>
+          <div class="cart-item-qty">
+            <button type="button" (click)="decrementarCantidad(item)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button type="button" (click)="incrementarCantidad(item)">+</button>
+          </div>
+          <strong class="cart-item-subtotal">{{ formatoPrecio(item.product.price * item.quantity) }}</strong>
+        </div>
 
-    <button class="btn-primary" type="button" (click)="confirmarPedido()">Confirmar pedido</button>
-  </div>
-</section>
+        <div class="cart-total-row">
+          <span>Total</span>
+          <strong>{{ formatoPrecio(totalPagar) }}</strong>
+        </div>
+
+        <button class="btn-primary" type="button" (click)="confirmarPedido()">Confirmar pedido</button>
+      </div>
+    </section>
 
     <section class="section-block">
-  <div class="section-title">
-    <div>
-      <span class="subtitle">HISTORIAL</span>
-      <h2>Pedidos confirmados</h2>
-      <p>Consulta las compras que has realizado en Pedidos 360.</p>
-    </div>
-  </div>
-
-  <div class="empty-card solid-border" *ngIf="historialPedidos.length === 0">
-    <span class="empty-icon">📦</span>
-    <h3>Aún no tienes pedidos confirmados</h3>
-    <p>Cuando confirmes tu carrito, tus pedidos aparecerán aquí.</p>
-  </div>
-
-  <div class="orders-list" *ngIf="historialPedidos.length > 0">
-    <div class="order-card" *ngFor="let pedido of historialPedidos">
-      <div class="order-card-header">
-        <strong>#{{ pedido.id }}</strong>
-        <small>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+      <div class="section-title">
+        <div>
+          <span class="subtitle">HISTORIAL</span>
+          <h2>Pedidos confirmados</h2>
+          <p>Consulta las compras que has realizado en Pedidos 360.</p>
+        </div>
       </div>
-      <p class="order-items" *ngFor="let it of pedido.items">
-        {{ it.quantity }} × {{ it.product.name }}
-      </p>
-      <div class="order-total">
-        <span>Total</span>
-        <span>{{ formatoPrecio(pedido.totalAmount) }}</span>
+
+      <div class="empty-card solid-border" *ngIf="historialPedidos.length === 0">
+        <span class="empty-icon">📦</span>
+        <h3>Aún no tienes pedidos confirmados</h3>
+        <p>Cuando confirmes tu carrito, tus pedidos aparecerán aquí.</p>
       </div>
-    </div>
-  </div>
-</section>
+
+      <div class="orders-list" *ngIf="historialPedidos.length > 0">
+        <div class="order-card" *ngFor="let pedido of historialPedidos">
+          <div class="order-card-header">
+            <strong>#{{ pedido.id }}</strong>
+            <small>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <p class="order-items" *ngFor="let it of pedido.items">
+            {{ it.quantity }} × {{ it.product.name }}
+          </p>
+          <div class="order-total">
+            <span>Total</span>
+            <span>{{ formatoPrecio(pedido.totalAmount) }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
   </main>
 </div>

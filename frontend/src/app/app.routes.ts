@@ -27,23 +27,21 @@ export const routes: Routes = [
     path: 'admin',
     component: Admin
   },
-  {
-    path: 'inicio',
-    component: Home
-  },
+
   {
     path: 'mis-pedidos',
     component: MisPedidos
   },
+
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'inicio',
     pathMatch: 'full'
   },
 
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: 'inicio'
   }
 
 ];

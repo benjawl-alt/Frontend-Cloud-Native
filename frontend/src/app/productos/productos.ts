@@ -22,7 +22,7 @@ export class Productos implements OnInit, OnDestroy {
 
   menuOpen = false;
   user: AccountInfo | null = null;
-  userInitial = 'U';
+  userInitial = '👤';
   isAdmin = false;
 
   cart: CartItem[] = [];
@@ -30,6 +30,7 @@ export class Productos implements OnInit, OnDestroy {
 
   mostrarToast = false;
   toastMensaje = '';
+  toastTipo: 'ok' | 'aviso' = 'ok';
   animarCarrito = false;
   private toastTimeout: any;
   private cartSub!: Subscription;
@@ -114,6 +115,11 @@ export class Productos implements OnInit, OnDestroy {
   }
 
   agregarAlCarrito(producto: Product): void {
+    if (!this.user) {
+      this.mostrarNotificacion('Debes iniciar sesión para agregar productos al carrito', 3000, 'aviso');
+      return;
+    }
+
     const resultado = this.cartService.addToCart(producto);
 
     if (resultado.ok) {
@@ -140,6 +146,11 @@ export class Productos implements OnInit, OnDestroy {
   }
 
   confirmarPedido(): void {
+    if (!this.user) {
+      this.mostrarNotificacion('Debes iniciar sesión para confirmar tu pedido', 3000, 'aviso');
+      return;
+    }
+
     if (this.cart.length === 0) {
       alert('El carrito está vacío.');
       return;
@@ -164,10 +175,11 @@ export class Productos implements OnInit, OnDestroy {
     });
   }
 
-  private mostrarNotificacion(mensaje: string, duracion: number = 2000): void {
+  private mostrarNotificacion(mensaje: string, duracion: number = 2000, tipo: 'ok' | 'aviso' = 'ok'): void {
     this.toastMensaje = mensaje;
+    this.toastTipo = tipo;
     this.mostrarToast = true;
-    this.animarCarrito = true;
+    this.animarCarrito = tipo === 'ok';
 
     clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => {
@@ -185,9 +197,14 @@ export class Productos implements OnInit, OnDestroy {
     img.dataset['fallback'] = 'true';
     img.src = '/images/productos/placeholder.svg';
   }
-  
+
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
+  }
+
+  irALogin(): void {
+    this.menuOpen = false;
+    this.router.navigate(['/login']);
   }
 
   logout(): void {

@@ -1,6 +1,8 @@
 <!-- NOTIFICACIÓN FLOTANTE (Abajo a la izquierda, sin tapar el carrito ni los botones) -->
-<div *ngIf="mostrarToast" style="position: fixed; bottom: 24px; left: 24px; z-index: 2000; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; pointer-events: none; transition: all 0.3s ease-in-out;">
-  <span style="font-size: 16px;">✓</span>
+<div *ngIf="mostrarToast"
+     [style.background]="toastTipo === 'aviso' ? '#f59e0b' : '#10b981'"
+     style="position: fixed; bottom: 24px; left: 24px; z-index: 2000; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; pointer-events: none; transition: all 0.3s ease-in-out;">
+  <span style="font-size: 16px;">{{ toastTipo === 'aviso' ? '⚠' : '✓' }}</span>
   <span>{{ toastMensaje }}</span>
 </div>
 
@@ -50,25 +52,45 @@
       </button>
 
       <div class="profile-menu" *ngIf="menuOpen">
-        <div class="profile-menu-header">
-          <div class="profile-info">
-            <strong>{{ user?.name || 'Usuario' }}</strong>
-            <small>Cuenta Microsoft</small>
-          </div>
-        </div>
 
-        <hr>
-
-        <button *ngIf="isAdmin" class="menu-button dashboard-button" type="button" (click)="goToAdmin()">
-          <span class="menu-icon">⚙️</span>
-          <span>Dashboard</span>
-        </button>
-
-        <button class="logout-button" type="button" (click)="logout()">
-          <span class="logout-icon">🚪</span>
-          <span>Cerrar sesión</span>
-        </button>
+  <ng-container *ngIf="user; else invitado">
+    <div class="profile-menu-header">
+      <div class="profile-info">
+        <strong>{{ user?.name || 'Usuario' }}</strong>
+        <small>Cuenta Microsoft</small>
       </div>
+    </div>
+
+    <hr>
+
+    <button *ngIf="isAdmin" class="menu-button dashboard-button" type="button" (click)="goToAdmin()">
+      <span class="menu-icon">⚙️</span>
+      <span>Dashboard</span>
+    </button>
+
+    <button class="logout-button" type="button" (click)="logout()">
+      <span class="logout-icon">🚪</span>
+      <span>Cerrar sesión</span>
+    </button>
+  </ng-container>
+
+  <ng-template #invitado>
+    <div class="profile-menu-header">
+      <div class="profile-info">
+        <strong>Invitado</strong>
+        <small>No has iniciado sesión</small>
+      </div>
+    </div>
+
+    <hr>
+
+    <button class="logout-button" type="button" (click)="irALogin()">
+      <span class="logout-icon">🔑</span>
+      <span>Iniciar sesión</span>
+    </button>
+  </ng-template>
+
+</div>
     </div>
 
   </div>

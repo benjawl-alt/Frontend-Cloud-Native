@@ -32,18 +32,25 @@ const msalInstance = new PublicClientApplication({
   }
 });
 
+type ScopesEntry = string | { httpMethod: string; scopes: string[] | null };
+
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-  const protectedResourceMap = new Map<string, Array<string>>();
+  const protectedResourceMap = new Map<string, Array<ScopesEntry> | null>();
 
-  const scope = ['api://b3dd3447-de99-4c5a-9cae-cf347f9aa7c2/access_as_user'];
+  const scopes = ['api://b3dd3447-de99-4c5a-9cae-cf347f9aa7c2/access_as_user'];
 
-  // Rutas protegidas para ambos microservicios (8081 y 8082)
-  protectedResourceMap.set('http://localhost:8081/api/orders', scope);
-  protectedResourceMap.set('http://localhost:8082/api/products', scope);
-  protectedResourceMap.set('http://localhost:8081/api/orders/*', scope);
-  protectedResourceMap.set('http://localhost:8081/api/orders', scope);
-  protectedResourceMap.set('http://localhost:8082/api/products/*', scope);
-  protectedResourceMap.set('http://localhost:8082/api/products', scope);
+  // Pedidos: siempre requieren sesión
+  protectedResourceMap.set('http://localhost:8081/api/orders', scopes);
+  protectedResourceMap.set('http://localhost:8081/api/orders/*', scopes);
+
+  // Productos: ver el catálogo (GET) es público; crear, editar y borrar requieren sesión
+  const soloEscritura: Array<ScopesEntry> = [
+    { httpMethod: 'POST', scopes },
+    { httpMethod: 'PUT', scopes },
+    { httpMethod: 'DELETE', scopes }
+  ];
+  protectedResourceMap.set('http://localhost:8082/api/products', soloEscritura);
+  protectedResourceMap.set('http://localhost:8082/api/products/*', soloEscritura);
 
   return {
     interactionType: InteractionType.Redirect,

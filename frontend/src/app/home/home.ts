@@ -18,7 +18,7 @@ export class Home implements OnInit, OnDestroy {
   menuOpen = false;
   cartOpen = false;
   user: AccountInfo | null = null;
-  userInitial = 'U';
+  userInitial = '👤';
   isAdmin = false;
 
   products: Product[] = [];
@@ -29,6 +29,7 @@ export class Home implements OnInit, OnDestroy {
   private cartSub!: Subscription;
 
   toastMensaje = '';
+  toastTipo: 'ok' | 'aviso' = 'ok';
   mostrarToast = false;
   animarCarrito = false;
   private toastTimeout: any;
@@ -101,6 +102,11 @@ export class Home implements OnInit, OnDestroy {
   }
 
   agregarAlCarrito(prod: Product): void {
+    if (!this.user) {
+      this.dispararFeedbackVisual('Debes iniciar sesión para agregar productos al carrito', 'aviso');
+      return;
+    }
+
     const resultado = this.cartService.addToCart(prod);
 
     if (resultado.ok) {
@@ -110,17 +116,18 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
-  private dispararFeedbackVisual(mensaje: string): void {
+  private dispararFeedbackVisual(mensaje: string, tipo: 'ok' | 'aviso' = 'ok'): void {
     this.toastMensaje = mensaje;
+    this.toastTipo = tipo;
     this.mostrarToast = true;
-    this.animarCarrito = true;
+    this.animarCarrito = tipo === 'ok';
 
     clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => {
       this.mostrarToast = false;
       this.animarCarrito = false;
       this.cdr.detectChanges();
-    }, 2200);
+    }, tipo === 'aviso' ? 3000 : 2200);
 
     this.cdr.detectChanges();
   }
@@ -142,6 +149,11 @@ export class Home implements OnInit, OnDestroy {
   }
 
   confirmarPedido(): void {
+    if (!this.user) {
+      this.dispararFeedbackVisual('Debes iniciar sesión para confirmar tu pedido', 'aviso');
+      return;
+    }
+
     if (this.cart.length === 0) {
       alert('El carrito está vacío.');
       return;
@@ -149,27 +161,36 @@ export class Home implements OnInit, OnDestroy {
 
     this.cartService.confirmarPedido().subscribe({
       next: () => {
-        alert('¡Pedido generado y guardado exitosamente en MongoDB!');
         this.cartOpen = false;
+        this.dispararFeedbackVisual('¡Compra exitosa!');
+        this.obtenerProductos(); // refresca el stock mostrado
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al procesar el pedido:', err);
-        alert('Ocurrió un error al enviar el pedido a ms-order.');
+        if (err.status === 409) {
+          alert('Uno de los productos ya no tiene stock suficiente. Actualizamos el catálogo, revisa tu carrito.');
+          this.obtenerProductos();
+        } else {
+          alert('Ocurrió un error al enviar el pedido a ms-order.');
+        }
       }
     });
   }
+
   get destacados(): Product[] {
     return this.products.slice(0, 4);
   }
-  
- onImgError(event: Event): void {
+
+  onImgError(event: Event): void {
     const img = event.target as HTMLImageElement;
     if (img.dataset['fallback']) return; // ya intentó el placeholder: no reintentar
     img.dataset['fallback'] = 'true';
     img.src = '/images/productos/placeholder.svg';
   }
+
   toggleMenu(): void { this.menuOpen = !this.menuOpen; }
   goToAdmin(): void { this.menuOpen = false; if (this.isAdmin) this.router.navigate(['/admin']); }
+  irALogin(): void { this.menuOpen = false; this.router.navigate(['/login']); }
   logout(): void { this.menuOpen = false; this.msalService.logoutRedirect({ postLogoutRedirectUri: window.location.origin }); }
 }
