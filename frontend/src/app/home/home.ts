@@ -159,7 +159,16 @@ export class Home implements OnInit, OnDestroy {
       }
     });
   }
-
+  get destacados(): Product[] {
+    return this.products.slice(0, 4);
+  }
+  
+ onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.dataset['fallback']) return; // ya intentó el placeholder: no reintentar
+    img.dataset['fallback'] = 'true';
+    img.src = '/images/productos/placeholder.svg';
+  }
   toggleMenu(): void { this.menuOpen = !this.menuOpen; }
   goToAdmin(): void { this.menuOpen = false; if (this.isAdmin) this.router.navigate(['/admin']); }
   logout(): void { this.menuOpen = false; this.msalService.logoutRedirect({ postLogoutRedirectUri: window.location.origin }); }

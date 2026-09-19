@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
@@ -22,13 +22,19 @@ export class MisPedidos implements OnInit, OnDestroy {
   cart: CartItem[] = [];
   historialPedidos: ConfirmedOrder[] = [];
 
+  // Aviso verde de compra exitosa
+  mostrarToast = false;
+  toastMensaje = '';
+  private toastTimeout: any;
+
   private cartSub!: Subscription;
   private ordersSub!: Subscription;
 
   constructor(
     private msalService: MsalService,
     private router: Router,
-    private cartService: CartService
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -51,13 +57,21 @@ export class MisPedidos implements OnInit, OnDestroy {
       this.isAdmin = roles.includes('Admin') || roles.includes('Administrator');
     }
 
-    this.cartSub = this.cartService.cart$.subscribe(cart => this.cart = cart);
-    this.ordersSub = this.cartService.orders$.subscribe(orders => this.historialPedidos = orders);
+    this.cartSub = this.cartService.cart$.subscribe(cart => {
+      this.cart = cart;
+      this.cdr.detectChanges();
+    });
+
+    this.ordersSub = this.cartService.orders$.subscribe(orders => {
+      this.historialPedidos = orders;
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnDestroy(): void {
     this.cartSub?.unsubscribe();
     this.ordersSub?.unsubscribe();
+    clearTimeout(this.toastTimeout);
   }
 
   get totalItemsCarrito(): number {
@@ -86,9 +100,32 @@ export class MisPedidos implements OnInit, OnDestroy {
 
   confirmarPedido(): void {
     this.cartService.confirmarPedido().subscribe({
-      next: () => alert('¡Pedido confirmado con éxito!'),
-      error: () => alert('Ocurrió un error al confirmar el pedido con ms-order.')
+      next: () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.mostrarNotificacion('¡Compra exitosa!', 3000);
+      },
+      error: (err) => {
+        console.error('Error al confirmar el pedido:', err);
+        if (err.status === 409) {
+          alert('Uno de los productos ya no tiene stock suficiente. Revisa tu carrito.');
+        } else {
+          alert('Ocurrió un error al confirmar el pedido con ms-order.');
+        }
+      }
     });
+  }
+
+  private mostrarNotificacion(mensaje: string, duracion: number = 2000): void {
+    this.toastMensaje = mensaje;
+    this.mostrarToast = true;
+
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = setTimeout(() => {
+      this.mostrarToast = false;
+      this.cdr.detectChanges();
+    }, duracion);
+
+    this.cdr.detectChanges();
   }
 
   toggleMenu(): void { this.menuOpen = !this.menuOpen; }

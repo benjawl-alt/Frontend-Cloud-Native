@@ -8,6 +8,7 @@ export interface Product {
   description: string;
   price: number;
   stock: number;
+  imageUrl?: string;
 }
 
 @Injectable({
@@ -27,11 +28,11 @@ export class ProductosService {
     return this.http.post<Product>(this.apiUrl, product);
   }
 
-  updateProduct(id: string, product: Product): Observable<Product> {
+  updateProduct(id: string | undefined, product: Product): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/${id}`, product);
   }
 
-  deleteProduct(id: string): Observable<void> {
+  deleteProduct(id: string | undefined): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

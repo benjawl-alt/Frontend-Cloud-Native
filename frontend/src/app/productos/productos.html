@@ -119,8 +119,12 @@
       <article class="product-card" *ngFor="let producto of productos">
 
         <div class="product-image">
-          <span>🛍️</span>
-        </div>
+  <img
+    [src]="producto.imageUrl || '/images/productos/placeholder.svg'"
+    [alt]="producto.name"
+    loading="lazy"
+    (error)="onImgError($event)">
+</div>
 
         <div class="product-content">
           <h2>{{ producto.name }}</h2>

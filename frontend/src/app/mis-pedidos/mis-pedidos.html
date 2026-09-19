@@ -2,6 +2,11 @@
 
   <!-- NAVBAR -->
   <header class="navbar">
+    <div
+  *ngIf="mostrarToast"
+  style="position: fixed; top: 20px; right: 20px; z-index: 2100; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+  ✓ {{ toastMensaje }}
+</div>
     <div class="logo">
       <div class="logo-icon">P360</div>
       <span>Pedidos 360</span>

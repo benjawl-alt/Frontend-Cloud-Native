@@ -1039,3 +1039,19 @@ nav a.active {
 }
 
 }
+/* =====================================================
+   FOTOS DE PRODUCTOS (fuera de cualquier @media)
+===================================================== */
+
+.product-card .product-image {
+  height: 150px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.product-card .product-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

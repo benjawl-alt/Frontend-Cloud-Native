@@ -147,8 +147,8 @@ export class Productos implements OnInit, OnDestroy {
 
     this.cartService.confirmarPedido().subscribe({
       next: () => {
-        alert('¡Pedido realizado con éxito!');
         this.cartOpen = false;
+        this.mostrarNotificacion('¡Compra exitosa!', 3000);
         this.cargarProductos(); // refresca el catálogo con el stock actualizado
       },
       error: (err) => {
@@ -164,7 +164,7 @@ export class Productos implements OnInit, OnDestroy {
     });
   }
 
-  private mostrarNotificacion(mensaje: string): void {
+  private mostrarNotificacion(mensaje: string, duracion: number = 2000): void {
     this.toastMensaje = mensaje;
     this.mostrarToast = true;
     this.animarCarrito = true;
@@ -174,11 +174,18 @@ export class Productos implements OnInit, OnDestroy {
       this.mostrarToast = false;
       this.animarCarrito = false;
       this.cdr.detectChanges();
-    }, 2000);
+    }, duracion);
 
     this.cdr.detectChanges();
   }
 
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img.dataset['fallback']) return; // ya intentó el placeholder: no reintentar
+    img.dataset['fallback'] = 'true';
+    img.src = '/images/productos/placeholder.svg';
+  }
+  
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
   }
