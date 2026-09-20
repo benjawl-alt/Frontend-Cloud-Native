@@ -119,16 +119,26 @@
         </div>
       </div>
 
-      <div class="empty-card solid-border" *ngIf="historialPedidos.length === 0">
+      <div class="empty-card solid-border" *ngIf="cargandoPedidos">
+        <p>Cargando tus pedidos...</p>
+      </div>
+
+      <div class="empty-card solid-border" *ngIf="!cargandoPedidos && errorPedidos">
+        <span class="empty-icon">⚠️</span>
+        <h3>{{ errorPedidos }}</h3>
+        <button class="btn-primary" type="button" (click)="cargarPedidos()">Intentar nuevamente</button>
+      </div>
+
+      <div class="empty-card solid-border" *ngIf="!cargandoPedidos && !errorPedidos && historialPedidos.length === 0">
         <span class="empty-icon">📦</span>
         <h3>Aún no tienes pedidos confirmados</h3>
         <p>Cuando confirmes tu carrito, tus pedidos aparecerán aquí.</p>
       </div>
 
-      <div class="orders-list" *ngIf="historialPedidos.length > 0">
+      <div class="orders-list" *ngIf="!cargandoPedidos && !errorPedidos && historialPedidos.length > 0">
         <div class="order-card" *ngFor="let pedido of historialPedidos">
           <div class="order-card-header">
-            <strong>#{{ pedido.id }}</strong>
+            <strong>#{{ pedido.id.slice(-6).toUpperCase() }}</strong>
             <small>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
           </div>
           <p class="order-items" *ngFor="let it of pedido.items">

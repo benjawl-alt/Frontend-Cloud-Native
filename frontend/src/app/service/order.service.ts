@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface OrderItem {
+  productId?: string;
   productName: string;
   unitPrice: number;
   quantity: number;
@@ -28,6 +29,12 @@ export class OrderService {
 
   constructor(private http: HttpClient) {}
 
+  // Pedidos del usuario logueado
+  getMyOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.apiUrl}/mine`);
+  }
+
+  // Todos los pedidos (solo admin)
   getAllOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(this.apiUrl);
   }

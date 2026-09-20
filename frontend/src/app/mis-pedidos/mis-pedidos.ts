@@ -22,6 +22,9 @@ export class MisPedidos implements OnInit, OnDestroy {
   cart: CartItem[] = [];
   historialPedidos: ConfirmedOrder[] = [];
 
+  cargandoPedidos = false;
+  errorPedidos = '';
+
   // Aviso flotante (verde = éxito, naranja = aviso)
   mostrarToast = false;
   toastMensaje = '';
@@ -55,7 +58,10 @@ export class MisPedidos implements OnInit, OnDestroy {
 
       const claims = account.idTokenClaims as any;
       const roles = claims?.roles || [];
-      this.isAdmin = roles.includes('Admin') || roles.includes('Administrator');
+      this.isAdmin =
+        roles.includes('Admin') ||
+        roles.includes('Administrator') ||
+        roles.includes('Administrador');
     }
 
     this.cartSub = this.cartService.cart$.subscribe(cart => {
@@ -67,12 +73,36 @@ export class MisPedidos implements OnInit, OnDestroy {
       this.historialPedidos = orders;
       this.cdr.detectChanges();
     });
+
+    this.cargarPedidos();
   }
 
   ngOnDestroy(): void {
     this.cartSub?.unsubscribe();
     this.ordersSub?.unsubscribe();
     clearTimeout(this.toastTimeout);
+  }
+
+  // Historial desde el servidor (solo los pedidos de este usuario)
+  cargarPedidos(): void {
+    if (!this.user) return;
+
+    this.cargandoPedidos = true;
+    this.errorPedidos = '';
+    this.cdr.detectChanges();
+
+    this.cartService.obtenerMisPedidos().subscribe({
+      next: () => {
+        this.cargandoPedidos = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al obtener mis pedidos:', err);
+        this.errorPedidos = 'No se pudieron cargar tus pedidos.';
+        this.cargandoPedidos = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   get totalItemsCarrito(): number {
@@ -109,6 +139,7 @@ export class MisPedidos implements OnInit, OnDestroy {
       next: () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.mostrarNotificacion('¡Compra exitosa!', 3000);
+        this.cargarPedidos(); // trae el pedido recién guardado
       },
       error: (err) => {
         console.error('Error al confirmar el pedido:', err);
