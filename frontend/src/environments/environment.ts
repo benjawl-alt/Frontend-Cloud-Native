@@ -1,9 +1,5 @@
 export const environment = {
-  production: false,
-
-  // Frontend
-  frontendUrl: 'http://localhost:4200',
-
-  // Backend/API para desarrollo
-  apiUrl: 'http://localhost:8080'
+  production: true,
+  ordersUrl: 'https://gx44zweg01.execute-api.us-east-1.amazonaws.com/api/orders',
+  productsUrl: 'https://gx44zweg01.execute-api.us-east-1.amazonaws.com/api/products'
 };

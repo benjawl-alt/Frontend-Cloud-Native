@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ProductosService, Product } from '../productos/productos.service';
-
+import { environment } from '../../environments/environment';
 export interface OrderItem {
   productName: string;
   unitPrice: number;
@@ -29,7 +29,7 @@ export interface Order {
 })
 export class Admin implements OnInit {
 
-  private readonly ordersUrl = 'http://localhost:8081/api/orders';
+  private readonly ordersUrl = environment.ordersUrl;
 
   productos: Product[] = [];
   pedidos: Order[] = [];

@@ -6,6 +6,7 @@ import { AccountInfo } from '@azure/msal-browser';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { CartService, CartItem, Product } from '../cart.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -82,7 +83,7 @@ export class Home implements OnInit, OnDestroy {
     this.cargandoProductos = true;
     this.errorProductos = '';
 
-    this.http.get<Product[]>('http://localhost:8082/api/products').subscribe({
+    this.http.get<Product[]>(environment.productsUrl).subscribe({
       next: (data) => {
         this.products = data;
         this.cargandoProductos = false;

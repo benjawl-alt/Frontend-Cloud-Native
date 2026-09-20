@@ -19,12 +19,13 @@ import {
 } from '@azure/msal-browser';
 
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
 
 const msalInstance = new PublicClientApplication({
   auth: {
     clientId: 'b3dd3447-de99-4c5a-9cae-cf347f9aa7c2',
     authority: 'https://login.microsoftonline.com/6cad67e2-2872-4d7c-9af2-de5251e67986',
-    redirectUri: 'http://localhost:4200/inicio',
+    redirectUri: window.location.origin + '/inicio',
     postLogoutRedirectUri: window.location.origin
   },
   cache: {
@@ -40,8 +41,8 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const scopes = ['api://b3dd3447-de99-4c5a-9cae-cf347f9aa7c2/access_as_user'];
 
   // Pedidos: siempre requieren sesión
-  protectedResourceMap.set('http://localhost:8081/api/orders', scopes);
-  protectedResourceMap.set('http://localhost:8081/api/orders/*', scopes);
+  protectedResourceMap.set(environment.ordersUrl, scopes);
+  protectedResourceMap.set(environment.ordersUrl + '/*', scopes);
 
   // Productos: ver el catálogo (GET) es público; crear, editar y borrar requieren sesión
   const soloEscritura: Array<ScopesEntry> = [
@@ -49,8 +50,8 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     { httpMethod: 'PUT', scopes },
     { httpMethod: 'DELETE', scopes }
   ];
-  protectedResourceMap.set('http://localhost:8082/api/products', soloEscritura);
-  protectedResourceMap.set('http://localhost:8082/api/products/*', soloEscritura);
+  protectedResourceMap.set(environment.productsUrl, soloEscritura);
+  protectedResourceMap.set(environment.productsUrl + '/*', soloEscritura);
 
   return {
     interactionType: InteractionType.Redirect,

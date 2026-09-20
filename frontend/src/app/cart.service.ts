@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
 export interface Product {
   id?: string;
@@ -108,7 +109,7 @@ export class CartService {
       dispatchMethod
     };
 
-    return this.http.post('http://localhost:8081/api/orders', payload).pipe(
+    return this.http.post(environment.ordersUrl, payload).pipe(
       tap(() => {
         const order: ConfirmedOrder = {
           id: 'local-' + Date.now(),
