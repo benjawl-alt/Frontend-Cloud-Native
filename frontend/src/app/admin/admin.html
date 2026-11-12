@@ -1,3 +1,4 @@
+
 <!-- ================================
      NAVBAR ADMINISTRADOR
 ================================ -->
@@ -37,11 +38,23 @@
     </div>
   </section>
 
-  <div *ngIf="cargando" style="padding:20px; text-align:center; color:#6b7280;">Cargando datos...</div>
-  <div *ngIf="error" style="padding:16px; margin-bottom:20px; background:#fee2e2; color:#dc2626; border-radius:8px; text-align:center;">{{ error }}</div>
+  <div *ngIf="cargando"
+       style="padding:20px; text-align:center; color:#6b7280;">
+    Cargando datos...
+  </div>
 
-  <!-- ESTADÍSTICAS -->
+  <div *ngIf="error"
+       style="padding:16px; margin-bottom:20px; background:#fee2e2; color:#dc2626; border-radius:8px; text-align:center;">
+    {{ error }}
+  </div>
+
+
+  <!-- ================================
+       ESTADÍSTICAS
+  ================================ -->
+
   <section class="stats">
+
     <article class="stat-card">
       <div class="stat-icon">🛒</div>
       <div class="stat-content">
@@ -77,19 +90,140 @@
         <small>Por pedido</small>
       </div>
     </article>
+
   </section>
 
-  <!-- GESTIÓN DE PRODUCTOS -->
+
+  <!-- ================================
+       INVENTARIO EN TIEMPO REAL
+       KAFKA STREAMS
+  ================================ -->
+
   <section class="admin-section">
-    <div class="section-heading" style="display:flex; justify-content:space-between; align-items:flex-end;">
+
+    <div class="section-heading"
+         style="display:flex; justify-content:space-between; align-items:flex-end;">
+
+      <div>
+        <h2>Inventario en tiempo real</h2>
+        <p>Eventos procesados con Kafka Streams. Se actualiza cada 5 segundos.</p>
+      </div>
+
+      <span class="status"
+            [ngClass]="alertasStock.length > 0 ? 'out-stock' : 'completed'">
+        {{ alertasStock.length }} alertas de stock
+      </span>
+
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+
+      <!-- ALERTAS DE STOCK -->
+
+      <div class="orders-container" style="padding:18px;">
+
+        <strong style="font-size:14px; color:#111827;">
+          Alertas de stock bajo
+        </strong>
+
+        <div *ngIf="alertasStock.length === 0"
+             style="padding:20px 0; color:#9ca3af; font-size:13px;">
+          Sin alertas por ahora.
+        </div>
+
+        <div *ngFor="let a of alertasStock"
+             style="margin-top:14px;">
+
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:#374151;">
+
+            <span>
+              <strong>{{ a.productName }}</strong>
+            </span>
+
+            <span>
+              {{ a.currentStock }} restantes (umbral {{ a.threshold }})
+            </span>
+
+          </div>
+
+          <div style="height:8px; background:#fee2e2; border-radius:6px; margin-top:6px; overflow:hidden;">
+
+            <div [style.width.%]="porcentajeStock(a)"
+                 style="height:100%; background:#dc2626;">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- PRODUCTOS MÁS DEMANDADOS -->
+
+      <div class="orders-container" style="padding:18px;">
+
+        <strong style="font-size:14px; color:#111827;">
+          Productos más demandados
+        </strong>
+
+        <div *ngIf="topProductos.length === 0"
+             style="padding:20px 0; color:#9ca3af; font-size:13px;">
+          Aún no hay ventas procesadas.
+        </div>
+
+        <div *ngFor="let p of topProductos"
+             style="margin-top:14px;">
+
+          <div style="display:flex; justify-content:space-between; font-size:12px; color:#374151;">
+
+            <span>{{ p.productName }}</span>
+
+            <strong>{{ p.unitsSold }} u.</strong>
+
+          </div>
+
+          <div style="height:8px; background:#e5e7eb; border-radius:6px; margin-top:6px; overflow:hidden;">
+
+            <div [style.width.%]="anchoBarra(p.unitsSold)"
+                 style="height:100%; background:#d97706;">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================
+       GESTIÓN DE PRODUCTOS
+  ================================ -->
+
+  <section class="admin-section">
+
+    <div class="section-heading"
+         style="display:flex; justify-content:space-between; align-items:flex-end;">
+
       <div>
         <h2>Productos</h2>
         <p>Crea, edita y elimina productos del catálogo.</p>
       </div>
-      <button class="btn-nuevo" type="button" (click)="abrirModalNuevo()">+ Nuevo producto</button>
+
+      <button class="btn-nuevo"
+              type="button"
+              (click)="abrirModalNuevo()">
+        + Nuevo producto
+      </button>
+
     </div>
 
     <div class="orders-container">
+
       <div class="products-table-header">
         <span>Producto</span>
         <span>Descripción</span>
@@ -98,36 +232,65 @@
         <span>Acciones</span>
       </div>
 
-      <div class="products-table-row" *ngFor="let producto of productos">
+      <div class="products-table-row"
+           *ngFor="let producto of productos">
+
         <span class="order-id">{{ producto.name }}</span>
+
         <span class="prod-desc">{{ producto.description }}</span>
+
         <span>{{ formatoPrecio(producto.price) }}</span>
+
         <span class="status"
               [class.completed]="producto.stock > 5"
               [class.preparing]="producto.stock > 0 && producto.stock <= 5"
               [class.out-stock]="producto.stock === 0">
           {{ producto.stock }}
         </span>
+
         <span class="product-actions">
-          <button type="button" class="icon-btn" (click)="abrirModalEditar(producto)" title="Editar">✏️</button>
-          <button type="button" class="icon-btn danger" (click)="eliminarProducto(producto)" title="Eliminar">🗑️</button>
+
+          <button type="button"
+                  class="icon-btn"
+                  (click)="abrirModalEditar(producto)"
+                  title="Editar">
+            ✏️
+          </button>
+
+          <button type="button"
+                  class="icon-btn danger"
+                  (click)="eliminarProducto(producto)"
+                  title="Eliminar">
+            🗑️
+          </button>
+
         </span>
+
       </div>
 
-      <div class="empty-row" *ngIf="!cargando && productos.length === 0">
+      <div class="empty-row"
+           *ngIf="!cargando && productos.length === 0">
         No hay productos registrados todavía.
       </div>
+
     </div>
+
   </section>
 
-  <!-- PEDIDOS RECIENTES -->
+
+  <!-- ================================
+       PEDIDOS RECIENTES
+  ================================ -->
+
   <section class="admin-section" id="pedidos-recientes">
+
     <div class="section-heading">
       <h2>Pedidos recientes</h2>
       <p>Últimos pedidos realizados en la plataforma.</p>
     </div>
 
     <div class="orders-container">
+
       <div class="orders-header">
         <span>Pedido</span>
         <span>Cliente</span>
@@ -136,31 +299,48 @@
         <span>Estado</span>
       </div>
 
-      <div class="order-row" *ngFor="let pedido of pedidosRecientes">
-        <span class="order-id">#{{ pedido.id?.slice(-6) || '------' }}</span>
+      <div class="order-row"
+           *ngFor="let pedido of pedidosRecientes">
+
+        <span class="order-id">
+          #{{ pedido.id?.slice(-6) || '------' }}
+        </span>
+
         <span>{{ pedido.userEmail }}</span>
+
         <span>{{ pedido.dispatchMethod }}</span>
+
         <span>{{ formatoPrecio(pedido.totalAmount) }}</span>
-        <span class="status" [ngClass]="estadoClase(pedido.status)">{{ pedido.status }}</span>
+
+        <span class="status"
+              [ngClass]="estadoClase(pedido.status)">
+          {{ pedido.status }}
+        </span>
+
       </div>
 
       <div class="empty-row" *ngIf="pedidos.length === 0">
         Aún no se han registrado pedidos.
       </div>
+
     </div>
+
   </section>
+
 
   <!-- ================================
        ACTIVIDAD
   ================================ -->
 
   <section class="admin-section">
+
     <div class="section-heading">
       <h2>Actividad reciente</h2>
       <p>Últimos movimientos del sistema.</p>
     </div>
 
     <div class="activity">
+
       <div class="activity-item">
         <div class="activity-icon">👤</div>
         <div>
@@ -184,68 +364,119 @@
           <span>Hace 35 minutos</span>
         </div>
       </div>
+
     </div>
+
   </section>
 
 </main>
 
-<!-- MODAL PRODUCTO -->
-<div *ngIf="modalAbierto" 
-     (click)="cerrarModal()"
-     style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.55); z-index: 3000; display: flex; align-items: center; justify-content: center;">
-  
-  <div (click)="$event.stopPropagation()"
-       style="background: white; width: 100%; max-width: 480px; border-radius: 16px; padding: 28px; box-shadow: 0 25px 60px rgba(0,0,0,0.3); box-sizing: border-box;">
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-      <h3 style="margin: 0; font-size: 19px; color: #111827; font-weight: 700;">
+<!-- ================================
+     MODAL PRODUCTO
+================================ -->
+
+<div *ngIf="modalAbierto"
+     (click)="cerrarModal()"
+     style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,23,42,0.55); z-index:3000; display:flex; align-items:center; justify-content:center;">
+
+  <div (click)="$event.stopPropagation()"
+       style="background:white; width:100%; max-width:480px; border-radius:16px; padding:28px; box-shadow:0 25px 60px rgba(0,0,0,0.3); box-sizing:border-box;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid #f1f5f9;">
+
+      <h3 style="margin:0; font-size:19px; color:#111827; font-weight:700;">
         {{ modoEdicion ? 'Editar producto' : 'Nuevo producto' }}
       </h3>
-      <button type="button" (click)="cerrarModal()" 
-              style="border: none; background: #f1f5f9; color: #6b7280; width: 30px; height: 30px; border-radius: 8px; font-size: 15px; cursor: pointer;">
+
+      <button type="button"
+              (click)="cerrarModal()"
+              style="border:none; background:#f1f5f9; color:#6b7280; width:30px; height:30px; border-radius:8px; font-size:15px; cursor:pointer;">
         ✕
       </button>
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 16px;">
-
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <label style="font-size: 12px; font-weight: 600; color: #374151;">Nombre</label>
-        <input type="text" [(ngModel)]="productoForm.name" placeholder="Nombre del producto"
-               style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; box-sizing: border-box; width: 100%;">
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <label style="font-size: 12px; font-weight: 600; color: #374151;">Descripción</label>
-        <textarea [(ngModel)]="productoForm.description" rows="3" placeholder="Descripción del producto"
-                  style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; font-family: inherit; resize: vertical; box-sizing: border-box; width: 100%;"></textarea>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label style="font-size: 12px; font-weight: 600; color: #374151;">Precio (CLP)</label>
-          <input type="number" [(ngModel)]="productoForm.price" min="0"
-                 style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; box-sizing: border-box; width: 100%;">
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 6px;">
-          <label style="font-size: 12px; font-weight: 600; color: #374151;">Stock</label>
-          <input type="number" [(ngModel)]="productoForm.stock" min="0"
-                 style="padding: 11px 13px; border: 1px solid #d1d5db; border-radius: 9px; font-size: 14px; outline: none; box-sizing: border-box; width: 100%;">
-        </div>
-      </div>
 
     </div>
 
-    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #f1f5f9;">
-      <button type="button" (click)="cerrarModal()"
-              style="border: 1px solid #cbd5e1; background: white; color: #374151; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;">
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+
+        <label style="font-size:12px; font-weight:600; color:#374151;">
+          Nombre
+        </label>
+
+        <input type="text"
+               [(ngModel)]="productoForm.name"
+               placeholder="Nombre del producto"
+               style="padding:11px 13px; border:1px solid #d1d5db; border-radius:9px; font-size:14px; outline:none; box-sizing:border-box; width:100%;">
+
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+
+        <label style="font-size:12px; font-weight:600; color:#374151;">
+          Descripción
+        </label>
+
+        <textarea [(ngModel)]="productoForm.description"
+                  rows="3"
+                  placeholder="Descripción del producto"
+                  style="padding:11px 13px; border:1px solid #d1d5db; border-radius:9px; font-size:14px; outline:none; font-family:inherit; resize:vertical; box-sizing:border-box; width:100%;">
+        </textarea>
+
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+
+          <label style="font-size:12px; font-weight:600; color:#374151;">
+            Precio (CLP)
+          </label>
+
+          <input type="number"
+                 [(ngModel)]="productoForm.price"
+                 min="0"
+                 style="padding:11px 13px; border:1px solid #d1d5db; border-radius:9px; font-size:14px; outline:none; box-sizing:border-box; width:100%;">
+
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+
+          <label style="font-size:12px; font-weight:600; color:#374151;">
+            Stock
+          </label>
+
+          <input type="number"
+                 [(ngModel)]="productoForm.stock"
+                 min="0"
+                 style="padding:11px 13px; border:1px solid #d1d5db; border-radius:9px; font-size:14px; outline:none; box-sizing:border-box; width:100%;">
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:24px; padding-top:18px; border-top:1px solid #f1f5f9;">
+
+      <button type="button"
+              (click)="cerrarModal()"
+              style="border:1px solid #cbd5e1; background:white; color:#374151; padding:10px 18px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer;">
         Cancelar
       </button>
-      <button type="button" [disabled]="guardando" (click)="guardarProducto()"
-              style="border: none; background: #2563eb; color: white; padding: 10px 18px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;">
+
+      <button type="button"
+              [disabled]="guardando"
+              (click)="guardarProducto()"
+              style="border:none; background:#2563eb; color:white; padding:10px 18px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer;">
+
         {{ guardando ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Crear producto') }}
+
       </button>
+
     </div>
 
   </div>
+
 </div>
